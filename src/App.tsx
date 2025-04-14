@@ -33,6 +33,7 @@ const App = () => (
               <Route path="/documentos" element={<DocumentsList />} />
               <Route path="/documentos/:id" element={<ViewDocument />} />
               <Route path="/criar-documento" element={<CreateDocument />} />
+              <Route path="/assinaturas" element={<Signatures />} />
               <Route path="/configuracoes" element={<Settings />} />
             </Route>
 
