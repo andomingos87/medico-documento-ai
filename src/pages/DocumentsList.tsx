@@ -63,7 +63,7 @@ const MOCK_DOCUMENTS = [
 export const DocumentsList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [documents, setDocuments] = useState(MOCK_DOCUMENTS);
 
   // Handlers para ações de documentos
@@ -88,7 +88,7 @@ export const DocumentsList = () => {
   // Filtragem de documentos
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter ? doc.status === statusFilter : true;
+    const matchesStatus = statusFilter !== 'all' ? doc.status === statusFilter : true;
     return matchesSearch && matchesStatus;
   });
 
@@ -124,7 +124,7 @@ export const DocumentsList = () => {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
               <SelectItem value="rascunho">Rascunho</SelectItem>
               <SelectItem value="pendente">Pendente</SelectItem>
               <SelectItem value="assinado">Assinado</SelectItem>
