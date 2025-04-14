@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,13 +62,43 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+                medico: {
+                    50: '#f0f9ff',
+                    100: '#e0f2fe',
+                    200: '#b9e6fe',
+                    300: '#7cd4fd',
+                    400: '#36bffa',
+                    500: '#0ca5e9',
+                    600: '#0284c7',
+                    700: '#036ba1',
+                    800: '#075985',
+                    900: '#0c4a6e',
+                    950: '#082f49',
+                },
+                neutral: {
+                    50: '#f8f9fa',
+                    100: '#f1f3f5',
+                    200: '#e9ecef',
+                    300: '#dee2e6',
+                    400: '#ced4da',
+                    500: '#adb5bd',
+                    600: '#868e96',
+                    700: '#495057',
+                    800: '#343a40',
+                    900: '#212529',
+                    950: '#1a1d1f',
+                }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+            boxShadow: {
+                'soft': '0 2px 15px -3px rgba(0,0,0,0.07), 0 10px 20px -2px rgba(0,0,0,0.04)',
+                'card': '0 0 0 1px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)',
+            },
 			keyframes: {
 				'accordion-down': {
 					from: {
