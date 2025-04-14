@@ -1,266 +1,339 @@
 
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
 import { 
-  FileText, 
-  Download, 
-  Printer, 
-  Share2, 
-  PenLine, 
-  ArrowLeft, 
-  Loader2,
-  CheckCircle2,
-  Clock,
-  ClipboardCopy
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+  Dialog,
+  DialogContent,
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
+import { FileText, Download, Share2, Printer, PenTool, MoreVertical, Calendar, User, Tag } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-// Dados fictícios para o documento
-const MOCK_DOCUMENT = {
-  id: '1',
-  title: 'Atestado Médico - João Silva',
-  status: 'pendente' as const,
-  createdAt: '2025-04-15T10:30:00',
-  documentType: 'Atestado Médico',
-  content: `ATESTADO MÉDICO
+// Tipos para o documento
+type DocumentStatus = 'rascunho' | 'pendente' | 'assinado';
 
-Atesto para os devidos fins que o(a) paciente João Silva compareceu à consulta médica na especialidade de Clínica Geral na data de 15/04/2025 e necessita de afastamento de suas atividades por um período de 3 (três) dias a contar desta data.
-
-Observações: Paciente apresentou sintomas de infecção respiratória aguda.
-
-Código CID: J00
-
-15/04/2025
-
-Dr. Ricardo Silva
-CRM 12345 - Clínica Geral`,
-};
+interface DocumentData {
+  id: string;
+  title: string;
+  content: string;
+  status: DocumentStatus;
+  createdAt: string;
+  documentType: string;
+  patient?: string;
+}
 
 export const ViewDocument = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [document, setDocument] = useState(MOCK_DOCUMENT);
-  const [isSigning, setIsSigning] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Dados fictícios do documento
+  const [document, setDocument] = useState<DocumentData>({
+    id: id || '1',
+    title: 'Atestado Médico - João Silva',
+    content: `
+      <div>
+        <h2 style="text-align: center; margin-bottom: 20px;">ATESTADO MÉDICO</h2>
+        
+        <p style="margin-bottom: 15px;">Atesto para os devidos fins que o(a) paciente <strong>João Silva</strong>, 
+        portador(a) do CPF 123.456.789-00, foi atendido(a) nesta data, necessitando de 
+        afastamento de suas atividades por 3 (três) dias a partir de 15/04/2025.</p>
+        
+        <p style="margin-bottom: 15px;">CID-10: J11 (Influenza devido a vírus não identificado)</p>
+        
+        <div style="margin-top: 40px; text-align: center;">
+          <p>São Paulo, 15 de Abril de 2025</p>
+          <div style="margin-top: 40px; border-top: 1px solid #000; width: 200px; margin-left: auto; margin-right: auto; padding-top: 5px;">
+            Dr. Ricardo Silva<br>
+            CRM/SP 123456<br>
+            Clínica Médica
+          </div>
+        </div>
+      </div>
+    `,
+    status: 'pendente',
+    createdAt: '2025-04-15T10:30:00',
+    documentType: 'Atestado Médico',
+    patient: 'João Silva'
+  });
 
-  const getStatusColor = (status: 'rascunho' | 'pendente' | 'assinado') => {
-    switch (status) {
-      case 'rascunho':
-        return 'bg-neutral-100 text-neutral-700';
-      case 'pendente':
-        return 'bg-yellow-100 text-yellow-700';
-      case 'assinado':
-        return 'bg-green-100 text-green-700';
-      default:
-        return 'bg-neutral-100 text-neutral-700';
-    }
-  };
-
-  const getStatusLabel = (status: 'rascunho' | 'pendente' | 'assinado') => {
-    switch (status) {
-      case 'rascunho':
-        return 'Rascunho';
-      case 'pendente':
-        return 'Pendente';
-      case 'assinado':
-        return 'Assinado';
-      default:
-        return status;
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(date);
-  };
-
-  const handleSign = () => {
-    setIsSigning(true);
+  // Função para assinar o documento
+  const handleSignDocument = () => {
+    setIsLoading(true);
     
     // Simulando o processo de assinatura
     setTimeout(() => {
       setDocument({
         ...document,
-        status: 'assinado' as const
+        status: 'assinado' as DocumentStatus // Garantir que o tipo é correto
       });
-      setIsSigning(false);
+      setIsLoading(false);
+      setIsSignDialogOpen(false);
       toast.success('Documento assinado com sucesso!');
-    }, 2000);
+    }, 1500);
   };
 
-  const handleCopyContent = () => {
-    navigator.clipboard.writeText(document.content);
-    setCopied(true);
-    toast.success('Conteúdo copiado para a área de transferência!');
+  // Função para baixar o documento
+  const handleDownload = () => {
+    toast.success('Documento baixado com sucesso!');
+  };
+
+  // Função para compartilhar o documento
+  const handleShare = () => {
+    toast.success('Link de compartilhamento copiado para a área de transferência!');
+  };
+
+  // Função para imprimir o documento
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Função para excluir o documento
+  const handleDelete = () => {
+    setIsLoading(true);
     
+    // Simulando o processo de exclusão
     setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+      setIsLoading(false);
+      setIsDeleteAlertOpen(false);
+      toast.success('Documento excluído com sucesso!');
+      // Redirecionaria para a lista de documentos em uma aplicação real
+    }, 1000);
+  };
+
+  // Renderiza o selo de status do documento
+  const renderStatusBadge = (status: DocumentStatus) => {
+    switch (status) {
+      case 'rascunho':
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Rascunho</Badge>;
+      case 'pendente':
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Pendente</Badge>;
+      case 'assinado':
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Assinado</Badge>;
+      default:
+        return null;
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="h-8 w-8"
-          onClick={() => navigate('/documentos')}
-        >
-          <ArrowLeft size={16} />
-        </Button>
-        <h1 className="text-2xl font-bold text-neutral-900">Visualizar Documento</h1>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <Card className="h-full flex flex-col">
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-xl">{document.title}</CardTitle>
-                <Badge variant="secondary" className={cn("font-normal", getStatusColor(document.status))}>
-                  {getStatusLabel(document.status)}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-1 relative">
-              <div className="border border-neutral-200 rounded-md p-6 min-h-[500px] font-mono text-sm whitespace-pre-wrap relative bg-white">
-                {document.content}
-                
-                {document.status === 'assinado' && (
-                  <div className="absolute bottom-6 right-6 flex items-center opacity-70">
-                    <div className="border-2 border-green-600 rounded-md p-2 text-green-600 text-xs font-medium rotate-[-5deg]">
-                      ASSINADO DIGITALMENTE
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute top-2 right-2"
-                onClick={handleCopyContent}
-              >
-                {copied ? (
-                  <CheckCircle2 size={16} className="text-green-600" />
-                ) : (
-                  <ClipboardCopy size={16} />
-                )}
-              </Button>
-            </CardContent>
-            <CardFooter className="border-t flex justify-between">
-              <div className="text-xs text-neutral-500 flex items-center">
-                <Clock size={14} className="mr-1" />
-                Criado em {formatDate(document.createdAt)}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Printer size={16} className="mr-2" />
-                  Imprimir
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Download size={16} className="mr-2" />
-                  Baixar PDF
-                </Button>
-              </div>
-            </CardFooter>
-          </Card>
-        </div>
-
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Informações</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-neutral-700">Tipo de Documento</p>
-                <p className="text-sm text-neutral-900">{document.documentType}</p>
-              </div>
-              
-              <div>
-                <p className="text-sm font-medium text-neutral-700">Status</p>
-                <Badge variant="secondary" className={cn("mt-1 font-normal", getStatusColor(document.status))}>
-                  {getStatusLabel(document.status)}
-                </Badge>
-              </div>
-              
-              <div>
-                <p className="text-sm font-medium text-neutral-700">Data de Criação</p>
-                <p className="text-sm text-neutral-900">{formatDate(document.createdAt)}</p>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <p className="text-sm font-medium text-neutral-700">Médico Responsável</p>
-                <p className="text-sm text-neutral-900">Dr. Ricardo Silva</p>
-                <p className="text-xs text-neutral-500">CRM 12345 - Clínica Geral</p>
-              </div>
-              
-              <div>
-                <p className="text-sm font-medium text-neutral-700">Paciente</p>
-                <p className="text-sm text-neutral-900">João Silva</p>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-2">
-              {document.status !== 'assinado' ? (
-                <Button
-                  className="w-full bg-medico-600 hover:bg-medico-700"
-                  onClick={handleSign}
-                  disabled={isSigning}
-                >
-                  {isSigning ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Assinando...
-                    </>
-                  ) : (
-                    <>
-                      <PenLine className="mr-2 h-4 w-4" />
-                      Assinar Documento
-                    </>
-                  )}
+          <h1 className="text-2xl font-bold text-neutral-900">{document.title}</h1>
+          <div className="flex items-center gap-2 mt-2">
+            {renderStatusBadge(document.status)}
+            <span className="text-sm text-neutral-500 flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {new Date(document.createdAt).toLocaleDateString('pt-BR')}
+            </span>
+            {document.patient && (
+              <span className="text-sm text-neutral-500 flex items-center gap-1">
+                <User className="h-3 w-3" />
+                {document.patient}
+              </span>
+            )}
+            <span className="text-sm text-neutral-500 flex items-center gap-1">
+              <Tag className="h-3 w-3" />
+              {document.documentType}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {document.status !== 'assinado' && (
+            <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-medico-600 hover:bg-medico-700">
+                  <PenTool className="mr-2 h-4 w-4" />
+                  Assinar
                 </Button>
-              ) : (
-                <Button
-                  className="w-full bg-green-600 hover:bg-green-700"
-                  disabled
-                >
-                  <CheckCircle2 className="mr-2 h-4 w-4" />
-                  Documento Assinado
-                </Button>
-              )}
-              
-              <Button variant="outline" className="w-full">
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Assinar Documento</DialogTitle>
+                  <DialogDescription>
+                    Ao assinar este documento, você confirma sua validade legal.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <p className="text-sm text-neutral-500">
+                    Documento: <span className="font-medium text-neutral-900">{document.title}</span>
+                  </p>
+                  <p className="text-sm text-neutral-500 mt-1">
+                    Esta ação não pode ser desfeita.
+                  </p>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsSignDialogOpen(false)}>Cancelar</Button>
+                  <Button 
+                    className="bg-medico-600 hover:bg-medico-700"
+                    onClick={handleSignDocument}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Processando...' : 'Confirmar Assinatura'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleDownload}>
+                <Download className="mr-2 h-4 w-4" />
+                <span>Baixar</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleShare}>
                 <Share2 className="mr-2 h-4 w-4" />
-                Compartilhar
-              </Button>
-              
-              <Button variant="outline" className="w-full">
-                <FileText className="mr-2 h-4 w-4" />
-                Editar Documento
-              </Button>
-            </CardFooter>
-          </Card>
+                <span>Compartilhar</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handlePrint}>
+                <Printer className="mr-2 h-4 w-4" />
+                <span>Imprimir</span>
+              </DropdownMenuItem>
+              <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+                <DropdownMenuItem 
+                  className="text-red-600"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setIsDeleteAlertOpen(true);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                  <span>Excluir</span>
+                </DropdownMenuItem>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir documento?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. O documento será permanentemente removido.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction 
+                      className="bg-red-600 hover:bg-red-700"
+                      onClick={handleDelete}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Excluindo...' : 'Excluir'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
+
+      <Tabs defaultValue="preview">
+        <TabsList className="mb-4">
+          <TabsTrigger value="preview">Visualizar</TabsTrigger>
+          <TabsTrigger value="info">Informações</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="preview">
+          <Card>
+            <CardContent className="p-6">
+              <div 
+                className="document-content"
+                dangerouslySetInnerHTML={{ __html: document.content }}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="info">
+          <Card>
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-neutral-500">Título</h3>
+                    <p className="mt-1">{document.title}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-neutral-500">Tipo de Documento</h3>
+                    <p className="mt-1">{document.documentType}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-neutral-500">Status</h3>
+                    <div className="mt-1">{renderStatusBadge(document.status)}</div>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-neutral-500">Data de Criação</h3>
+                    <p className="mt-1">{new Date(document.createdAt).toLocaleDateString('pt-BR')}</p>
+                  </div>
+                  {document.patient && (
+                    <div>
+                      <h3 className="text-sm font-medium text-neutral-500">Paciente</h3>
+                      <p className="mt-1">{document.patient}</p>
+                    </div>
+                  )}
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium text-neutral-500 mb-2">Histórico de Alterações</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex">
+                      <div className="w-4 h-4 rounded-full bg-neutral-200 mt-1 mr-2 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium">Documento criado</p>
+                        <p className="text-neutral-500">15/04/2025 às 10:30 - Dr. Ricardo Silva</p>
+                      </div>
+                    </div>
+                    {document.status === 'assinado' && (
+                      <div className="flex">
+                        <div className="w-4 h-4 rounded-full bg-green-200 mt-1 mr-2 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium">Documento assinado</p>
+                          <p className="text-neutral-500">15/04/2025 às 14:45 - Dr. Ricardo Silva</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
