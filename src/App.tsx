@@ -11,6 +11,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { DocumentsList } from "./pages/DocumentsList";
 import { CreateDocument } from "./pages/CreateDocument";
 import { ViewDocument } from "./pages/ViewDocument";
+import { Signatures } from "./pages/Signatures";
 import { Settings } from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
