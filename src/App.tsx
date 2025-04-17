@@ -9,7 +9,6 @@ import { AppLayout } from "./components/AppLayout";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
 import { DocumentsList } from "./pages/DocumentsList";
-import { CreateDocument } from "./pages/CreateDocument";
 import { ViewDocument } from "./pages/ViewDocument";
 import { Signatures } from "./pages/Signatures";
 import { Settings } from "./pages/Settings";
@@ -32,7 +31,8 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/documentos" element={<DocumentsList />} />
               <Route path="/documentos/:id" element={<ViewDocument />} />
-              <Route path="/criar-documento" element={<CreateDocument />} />
+              {/* Redirect /criar-documento to /documentos */}
+              <Route path="/criar-documento" element={<Navigate to="/documentos" replace />} />
               <Route path="/assinaturas" element={<Signatures />} />
               <Route path="/configuracoes" element={<Settings />} />
             </Route>

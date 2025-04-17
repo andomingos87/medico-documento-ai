@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { FileText, Home, Settings, PlusCircle, CheckSquare, Menu, FileSignature } from 'lucide-react';
+import { FileText, Home, Settings, Menu, FileSignature } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type SidebarLinkProps = {
@@ -82,9 +82,6 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
           </SidebarLink>
           <SidebarLink to="/documentos" icon={FileText}>
             Documentos
-          </SidebarLink>
-          <SidebarLink to="/criar-documento" icon={PlusCircle}>
-            Criar Documento
           </SidebarLink>
           <SidebarLink to="/assinaturas" icon={FileSignature}>
             Assinaturas
