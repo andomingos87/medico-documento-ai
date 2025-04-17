@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
 import { 
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { SignatureCapture } from './SignatureCapture';
 import { ConsentDocument, SignedConsentDocument } from './types';
+import { createStatusBadge } from '@/lib/statusBadgeUtils';
 
 interface DocumentViewDialogProps {
   isOpen: boolean;
@@ -63,9 +63,12 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({
           </div>
           
           {selectedDocument.status === 'signed' && (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-              Assinado em {formatDate((selectedDocument as SignedConsentDocument).signedAt)}
-            </Badge>
+            <div>
+              {createStatusBadge('signed')}
+              <span className="ml-2">
+                {formatDate((selectedDocument as SignedConsentDocument).signedAt)}
+              </span>
+            </div>
           )}
         </div>
         

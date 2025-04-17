@@ -9,7 +9,7 @@ interface DocumentsTabPanelProps {
   value: string;
   documents: ConsentDocument[];
   formatDate: (dateString: string) => string;
-  renderStatusBadge: (status: 'pending' | 'signed') => React.ReactNode;
+  renderStatusBadge: (status: 'pending' | 'signed') => 'pending' | 'signed';
   onView: (doc: ConsentDocument) => void;
 }
 

@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import { 
   ConsentDocument, 
   PendingConsentDocument, 
@@ -115,13 +114,8 @@ export const useDocuments = () => {
     return new Date(dateString).toLocaleDateString('pt-BR', options);
   };
 
-  // Render status badge
-  const renderStatusBadge = (status: 'pending' | 'signed') => {
-    if (status === 'pending') {
-      return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Pendente</Badge>;
-    }
-    return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Assinado</Badge>;
-  };
+  // Status badge rendering function
+  const renderStatusBadge = (status: 'pending' | 'signed') => status;
 
   return {
     documents,

@@ -1,17 +1,14 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, CheckCircle } from 'lucide-react';
-import { DocumentsTabPanel } from './DocumentsTabPanel';
-import { BenefitsCard } from './BenefitsCard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ConsentDocument } from './types';
+import { DocumentsTabPanel } from './DocumentsTabPanel';
 
 interface SignaturesContentProps {
   pendingDocuments: ConsentDocument[];
   signedDocuments: ConsentDocument[];
   formatDate: (dateString: string) => string;
-  renderStatusBadge: (status: 'pending' | 'signed') => React.ReactNode;
+  renderStatusBadge: (status: 'pending' | 'signed') => 'pending' | 'signed';
   onView: (doc: ConsentDocument) => void;
 }
 
@@ -20,50 +17,44 @@ export const SignaturesContent: React.FC<SignaturesContentProps> = ({
   signedDocuments,
   formatDate,
   renderStatusBadge,
-  onView
+  onView,
 }) => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Benefícios e Recursos */}
-      <BenefitsCard />
+    <Tabs defaultValue="pending" className="space-y-4">
+      <TabsList>
+        <TabsTrigger value="pending" className="relative">
+          Pendentes
+          {pendingDocuments.length > 0 && (
+            <span className="ml-1 rounded-full bg-medico-600 px-1.5 py-0.5 text-xs text-white">
+              {pendingDocuments.length}
+            </span>
+          )}
+        </TabsTrigger>
+        <TabsTrigger value="signed">
+          Assinados
+          {signedDocuments.length > 0 && (
+            <span className="ml-1 rounded-full bg-neutral-200 px-1.5 py-0.5 text-xs text-neutral-700">
+              {signedDocuments.length}
+            </span>
+          )}
+        </TabsTrigger>
+      </TabsList>
       
-      {/* Lista de documentos */}
-      <Card className="lg:col-span-3">
-        <Tabs defaultValue="pending">
-          <CardHeader className="pb-0">
-            <div className="flex items-center justify-between">
-              <TabsList>
-                <TabsTrigger value="pending" className="flex items-center">
-                  <Clock className="mr-2 h-4 w-4" />
-                  Pendentes ({pendingDocuments.length})
-                </TabsTrigger>
-                <TabsTrigger value="signed" className="flex items-center">
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Assinados ({signedDocuments.length})
-                </TabsTrigger>
-              </TabsList>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="pt-6">
-            <DocumentsTabPanel
-              value="pending"
-              documents={pendingDocuments}
-              formatDate={formatDate}
-              renderStatusBadge={renderStatusBadge}
-              onView={onView}
-            />
-            
-            <DocumentsTabPanel
-              value="signed"
-              documents={signedDocuments}
-              formatDate={formatDate}
-              renderStatusBadge={renderStatusBadge}
-              onView={onView}
-            />
-          </CardContent>
-        </Tabs>
-      </Card>
-    </div>
+      <DocumentsTabPanel
+        value="pending"
+        documents={pendingDocuments}
+        formatDate={formatDate}
+        renderStatusBadge={renderStatusBadge}
+        onView={onView}
+      />
+      
+      <DocumentsTabPanel
+        value="signed"
+        documents={signedDocuments}
+        formatDate={formatDate}
+        renderStatusBadge={renderStatusBadge}
+        onView={onView}
+      />
+    </Tabs>
   );
 };

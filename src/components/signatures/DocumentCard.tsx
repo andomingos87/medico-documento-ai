@@ -1,15 +1,15 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, FileText, Send } from 'lucide-react';
 import { ConsentDocument, SignedConsentDocument } from './types';
+import { createStatusBadge } from '@/lib/statusBadgeUtils';
 
 interface DocumentCardProps {
   document: ConsentDocument;
   formatDate: (dateString: string) => string;
-  renderStatusBadge: (status: 'pending' | 'signed') => React.ReactNode;
+  renderStatusBadge: (status: 'pending' | 'signed') => 'pending' | 'signed';
   onView: (doc: ConsentDocument) => void;
 }
 
@@ -27,7 +27,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-medium text-neutral-900">{document.patientName}</h3>
-                {renderStatusBadge(document.status as 'pending' | 'signed')}
+                {createStatusBadge(renderStatusBadge(document.status as 'pending' | 'signed'))}
               </div>
               <p className="text-sm text-neutral-500 mt-1">{document.procedureType}</p>
             </div>
