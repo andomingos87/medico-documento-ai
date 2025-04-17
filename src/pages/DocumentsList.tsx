@@ -14,49 +14,49 @@ import { DocumentCard } from '@/components/DocumentCard';
 import { FilePlus, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Dados fictícios de documentos
+// Dados fictícios de documentos (adaptado para termos de consentimento estéticos)
 const MOCK_DOCUMENTS = [
   {
     id: '1',
-    title: 'Atestado Médico - João Silva',
+    title: 'Termo de Consentimento - Toxina Botulínica (Ana Silva)',
     status: 'assinado' as const,
     createdAt: '2025-04-15T10:30:00',
-    documentType: 'Atestado Médico',
+    documentType: 'Toxina Botulínica',
   },
   {
     id: '2',
-    title: 'Receita - Maria Oliveira',
+    title: 'Termo de Consentimento - Preenchimento Facial (Maria Oliveira)',
     status: 'pendente' as const,
     createdAt: '2025-04-14T15:45:00',
-    documentType: 'Receita',
+    documentType: 'Preenchimento Facial',
   },
   {
     id: '3',
-    title: 'Laudo Médico - Pedro Santos',
+    title: 'Termo de Consentimento - Fios de PDO (Pedro Santos)',
     status: 'rascunho' as const,
     createdAt: '2025-04-13T09:15:00',
-    documentType: 'Laudo Médico',
+    documentType: 'Fios de PDO',
   },
   {
     id: '4',
-    title: 'Solicitação de Exame - Ana Costa',
+    title: 'Termo de Consentimento - Bioestimulador (Ana Costa)',
     status: 'pendente' as const,
     createdAt: '2025-04-12T11:20:00',
-    documentType: 'Solicitação de Exame',
+    documentType: 'Bioestimulador',
   },
   {
     id: '5',
-    title: 'Declaração - Carlos Pereira',
+    title: 'Termo de Consentimento - Peeling Químico (Carlos Pereira)',
     status: 'assinado' as const,
     createdAt: '2025-04-11T16:00:00',
-    documentType: 'Declaração',
+    documentType: 'Peeling Químico',
   },
   {
     id: '6',
-    title: 'Atestado Médico - Fernanda Lima',
+    title: 'Termo de Consentimento - Toxina Botulínica (Fernanda Lima)',
     status: 'assinado' as const,
     createdAt: '2025-04-10T13:45:00',
-    documentType: 'Atestado Médico',
+    documentType: 'Toxina Botulínica',
   },
 ];
 
@@ -78,11 +78,12 @@ export const DocumentsList = () => {
   const handleDeleteDocument = (id: string) => {
     // Simulando exclusão
     setDocuments(documents.filter(doc => doc.id !== id));
-    toast.success('Documento excluído com sucesso!');
+    toast.success('Termo de consentimento excluído com sucesso!');
   };
 
   const handleSignDocument = (id: string) => {
-    navigate(`/documentos/${id}/assinar`);
+    navigate(`/assinaturas`);
+    toast.info('Redirecionando para página de assinatura');
   };
 
   // Filtragem de documentos
@@ -95,13 +96,18 @@ export const DocumentsList = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
-        <h1 className="text-2xl font-bold text-neutral-900">Documentos</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-900">Termos de Consentimento</h1>
+          <p className="text-neutral-500 mt-1">
+            Gerencie todos os termos de consentimento para procedimentos estéticos
+          </p>
+        </div>
         <Button 
           onClick={() => navigate('/criar-documento')}
           className="bg-medico-600 hover:bg-medico-700"
         >
           <FilePlus className="mr-2 h-4 w-4" />
-          Novo Documento
+          Novo Termo
         </Button>
       </div>
 
@@ -110,7 +116,7 @@ export const DocumentsList = () => {
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-4 w-4" />
             <Input
-              placeholder="Buscar documentos..."
+              placeholder="Buscar por paciente ou procedimento..."
               className="pl-9"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -151,7 +157,7 @@ export const DocumentsList = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-neutral-500">Nenhum documento encontrado.</p>
+            <p className="text-neutral-500">Nenhum termo de consentimento encontrado.</p>
           </div>
         )}
       </div>

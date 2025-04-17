@@ -23,28 +23,31 @@ import {
 import { Loader2, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Dados fictícios de especialidades e tipos de documentos
-const SPECIALTIES = [
-  "Clínica Geral",
-  "Cardiologia",
+// Dados específicos para procedimentos estéticos
+const ESPECIALIDADES = [
+  "Estética Avançada",
   "Dermatologia",
-  "Ortopedia",
-  "Pediatria",
-  "Psiquiatria",
-  "Neurologia",
-  "Oftalmologia",
-  "Ginecologia",
-  "Urologia",
+  "Cirurgia Plástica",
+  "Medicina Estética",
+  "Biomedicina Estética",
+  "Harmonização Facial",
+  "Odontologia Estética",
 ];
 
-const DOCUMENT_TYPES = [
-  "Atestado Médico",
-  "Laudo Médico",
-  "Receita",
-  "Solicitação de Exame",
-  "Declaração",
-  "Encaminhamento",
-  "Relatório Médico",
+const PROCEDIMENTOS_ESTETICOS = [
+  "Toxina Botulínica (Botox)",
+  "Preenchimento Facial",
+  "Fios de PDO",
+  "Bioestimulador de Colágeno",
+  "Skinbooster",
+  "Peeling Químico",
+  "Laser",
+  "Radiofrequência",
+  "Harmonização Facial Completa",
+  "Microagulhamento",
+  "HIFU",
+  "Carboxiterapia",
+  "Preenchimento Labial",
 ];
 
 export const CreateDocument = () => {
@@ -53,6 +56,7 @@ export const CreateDocument = () => {
     patientName: '',
     specialty: '',
     documentType: '',
+    procedureArea: '',
     customInstructions: '',
   });
   const [generatedContent, setGeneratedContent] = useState('');
@@ -91,20 +95,21 @@ export const CreateDocument = () => {
     setTimeout(() => {
       setIsGenerating(false);
       setGeneratedContent(
-        generateMockDocument(
+        generateMockConsentForm(
           formData.patientName,
           formData.specialty,
           formData.documentType,
+          formData.procedureArea,
           formData.customInstructions
         )
       );
-      toast.success('Documento gerado com sucesso!');
+      toast.success('Termo de consentimento gerado com sucesso!');
     }, 2500);
   };
 
   const handleSaveDocument = () => {
     if (!generatedContent) {
-      toast.error('Gere o conteúdo do documento primeiro.');
+      toast.error('Gere o conteúdo do termo primeiro.');
       return;
     }
 
@@ -113,46 +118,61 @@ export const CreateDocument = () => {
     // Simulando o salvamento
     setTimeout(() => {
       setIsSaving(false);
-      toast.success('Documento salvo com sucesso!');
+      toast.success('Termo de consentimento salvo com sucesso!');
       navigate('/documentos');
     }, 1500);
   };
 
-  // Função para gerar documento fictício com base nos inputs
-  const generateMockDocument = (
+  // Função para gerar termo de consentimento fictício com base nos inputs
+  const generateMockConsentForm = (
     patientName: string,
     specialty: string,
-    documentType: string,
+    procedureType: string,
+    procedureArea: string,
     customInstructions: string
   ) => {
     const currentDate = new Date().toLocaleDateString('pt-BR');
+    const areaText = procedureArea ? `na região de ${procedureArea}` : '';
     
-    let content = '';
+    let content = `TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO\nPROCEDIMENTO: ${procedureType.toUpperCase()} ${areaText}\n\nEu, ${patientName}, inscrito(a) no CPF sob o n° XXX.XXX.XXX-XX, declaro para os devidos fins que fui informado(a) de forma clara, objetiva e compreensível pelo(a) profissional da área de ${specialty} sobre todos os detalhes referentes ao procedimento de ${procedureType} ${areaText} ao qual serei submetido(a).`;
     
-    switch (documentType) {
-      case 'Atestado Médico':
-        content = `ATESTADO MÉDICO\n\nAtesto para os devidos fins que o(a) paciente ${patientName} compareceu à consulta médica na especialidade de ${specialty} na data de ${currentDate} e necessita de afastamento de suas atividades por um período de 3 (três) dias a contar desta data.\n\n${customInstructions ? `Observações: ${customInstructions}\n\n` : ''}Código CID: Z00.0\n\n${currentDate}\n\nDr. Ricardo Silva\nCRM 12345 - ${specialty}`;
+    // Adicionar conteúdo específico baseado no tipo de procedimento
+    switch (procedureType) {
+      case 'Toxina Botulínica (Botox)':
+        content += `\n\nFui informado(a) que:\n\n1. A Toxina Botulínica é utilizada para relaxamento muscular temporário, diminuindo rugas dinâmicas e linhas de expressão;\n\n2. O resultado do procedimento é temporário, durando em média de 3 a 6 meses, sendo necessária nova aplicação para manutenção dos resultados;\n\n3. Possíveis efeitos colaterais incluem: dor leve no local da aplicação, edema (inchaço), eritema (vermelhidão), equimose (hematoma), assimetria temporária, ptose palpebral (queda da pálpebra), cefaleia (dor de cabeça);\n\n4. O resultado final poderá ser observado entre 7 a 15 dias após a aplicação;\n\n5. Devo seguir rigorosamente as recomendações pós-procedimento para evitar complicações, tais como não massagear a área tratada, não deitar e não praticar atividades físicas nas primeiras 24 horas.`;
         break;
-      case 'Receita':
-        content = `RECEITA MÉDICA\n\nPaciente: ${patientName}\nData: ${currentDate}\n\nUso Interno:\n\n1. Paracetamol 750mg\n   Tomar 1 comprimido de 8 em 8 horas se dor ou febre.\n\n2. Amoxicilina 500mg\n   Tomar 1 comprimido de 8 em 8 horas por 7 dias.\n\n${customInstructions ? `Observações adicionais: ${customInstructions}\n\n` : ''}Dr. Ricardo Silva\nCRM 12345 - ${specialty}`;
+      case 'Preenchimento Facial':
+        content += `\n\nFui informado(a) que:\n\n1. O Preenchimento Facial é realizado com ácido hialurônico injetável para restaurar volumes, corrigir linhas, rugas e melhorar o contorno facial;\n\n2. O resultado do procedimento é temporário, durando em média de 6 a 18 meses, dependendo da área tratada e do produto utilizado;\n\n3. Possíveis efeitos colaterais incluem: dor, edema (inchaço), eritema (vermelhidão), equimose (hematoma), assimetria temporária, nódulos ou irregularidades palpáveis;\n\n4. Em raros casos podem ocorrer complicações mais graves como necrose tecidual e oclusão vascular;\n\n5. O resultado final poderá ser observado após a resolução do edema inicial, aproximadamente 7 a 14 dias;\n\n6. Devo seguir rigorosamente as recomendações pós-procedimento, evitando exposição solar intensa, saunas, atividade física e consumo de álcool nas primeiras 24-48 horas.`;
+        break;
+      case 'Fios de PDO':
+        content += `\n\nFui informado(a) que:\n\n1. Os Fios de PDO (polidioxanona) são inseridos na pele para promover sustentação, estimulação de colágeno e melhora na firmeza cutânea;\n\n2. O resultado do procedimento é temporário, com duração média de 8 a 12 meses, variando conforme a resposta individual;\n\n3. Possíveis efeitos colaterais incluem: dor, edema (inchaço), hematomas, sensibilidade local, assimetria, ondulações ou irregularidades temporárias visíveis ou palpáveis;\n\n4. Em raros casos, pode ocorrer extrusão (expulsão) dos fios, infecção local ou reação alérgica;\n\n5. O resultado final poderá ser observado após a resolução completa do edema, aproximadamente 15 a 30 dias;\n\n6. Devo seguir rigorosamente as recomendações pós-procedimento, evitando movimentos excessivos da face, massagens na área, exposição solar intensa e atividades físicas nas primeiras 72 horas.`;
         break;
       default:
-        content = `${documentType.toUpperCase()}\n\nPaciente: ${patientName}\nData: ${currentDate}\nEspecialidade: ${specialty}\n\n${customInstructions ? `Informações adicionais: ${customInstructions}\n\n` : ''}Este documento foi gerado automaticamente pelo sistema MedicoDoc.\n\nDr. Ricardo Silva\nCRM 12345 - ${specialty}`;
+        content += `\n\nFui informado(a) que:\n\n1. Este procedimento possui características específicas que me foram explicadas detalhadamente;\n\n2. Existem possíveis efeitos colaterais e complicações associados ao procedimento que me foram claramente informados;\n\n3. O resultado final poderá ser observado após o período de recuperação completa;\n\n4. Devo seguir rigorosamente todas as recomendações pré e pós-procedimento para garantir o melhor resultado possível e evitar complicações.`;
     }
-    
+
+    // Adicionar instruções personalizadas se existirem
+    if (customInstructions) {
+      content += `\n\nInformações adicionais específicas: ${customInstructions}`;
+    }
+
+    // Finalização padrão do termo
+    content += `\n\nDeclaro também que todas as minhas dúvidas foram esclarecidas e que fui orientado(a) sobre os cuidados pré e pós-procedimento que devo seguir para obter o melhor resultado possível.\n\nReconheço que não há garantia absoluta sobre o resultado final esperado, pois depende de fatores individuais como resposta biológica, hábitos de vida e seguimento das orientações profissionais.\n\nPor meio deste documento, declaro meu consentimento livre e esclarecido para a realização do procedimento descrito acima, assumindo a responsabilidade e os riscos pelos eventuais efeitos deste.\n\n${currentDate}\n\n\n________________________________\n${patientName}\nCPF: XXX.XXX.XXX-XX\n\n\n________________________________\nProfissional Responsável\nRegistro Profissional`;
+
     return content;
   };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-neutral-900">Criar Documento</h1>
+      <h1 className="text-2xl font-bold text-neutral-900">Criar Termo de Consentimento</h1>
+      <p className="text-neutral-500">Gere termos de consentimento personalizados para procedimentos estéticos</p>
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Informações do Documento</CardTitle>
+            <CardTitle>Informações do Procedimento</CardTitle>
             <CardDescription>
-              Preencha os dados para gerar o documento automaticamente com IA
+              Preencha os dados para gerar o termo automaticamente com IA
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -179,7 +199,7 @@ export const CreateDocument = () => {
                     <SelectValue placeholder="Selecione a especialidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    {SPECIALTIES.map((specialty) => (
+                    {ESPECIALIDADES.map((specialty) => (
                       <SelectItem key={specialty} value={specialty}>
                         {specialty}
                       </SelectItem>
@@ -189,16 +209,16 @@ export const CreateDocument = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="documentType">Tipo de Documento</Label>
+                <Label htmlFor="documentType">Tipo de Procedimento</Label>
                 <Select
                   value={formData.documentType}
                   onValueChange={(value) => handleSelectChange('documentType', value)}
                 >
                   <SelectTrigger id="documentType">
-                    <SelectValue placeholder="Selecione o tipo de documento" />
+                    <SelectValue placeholder="Selecione o procedimento" />
                   </SelectTrigger>
                   <SelectContent>
-                    {DOCUMENT_TYPES.map((type) => (
+                    {PROCEDIMENTOS_ESTETICOS.map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
                       </SelectItem>
@@ -208,14 +228,25 @@ export const CreateDocument = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="customInstructions">Instruções Adicionais (opcional)</Label>
+                <Label htmlFor="procedureArea">Área de Aplicação (opcional)</Label>
+                <Input
+                  id="procedureArea"
+                  name="procedureArea"
+                  placeholder="Ex: face, lábios, região periocular..."
+                  value={formData.procedureArea}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="customInstructions">Observações Específicas (opcional)</Label>
                 <Textarea
                   id="customInstructions"
                   name="customInstructions"
-                  placeholder="Adicione detalhes específicos ou instruções para personalizar o documento..."
+                  placeholder="Adicione informações particulares sobre este paciente ou procedimento..."
                   value={formData.customInstructions}
                   onChange={handleChange}
-                  rows={4}
+                  rows={3}
                 />
               </div>
               
@@ -227,12 +258,12 @@ export const CreateDocument = () => {
                 {isGenerating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Gerando...
+                    Gerando Termo...
                   </>
                 ) : (
                   <>
                     <Sparkles className="mr-2 h-4 w-4" />
-                    Gerar com IA
+                    Gerar Termo com IA
                   </>
                 )}
               </Button>
@@ -242,14 +273,14 @@ export const CreateDocument = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Pré-visualização</CardTitle>
+            <CardTitle>Pré-visualização do Termo</CardTitle>
             <CardDescription>
-              Conteúdo gerado pela IA com base nas informações fornecidas
+              Texto gerado pela IA com base nas informações fornecidas
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="bg-neutral-50 border border-neutral-200 rounded-md p-4 h-[360px] overflow-y-auto font-mono text-sm whitespace-pre-wrap">
-              {generatedContent || "O conteúdo do documento será exibido aqui após a geração."}
+            <div className="bg-neutral-50 border border-neutral-200 rounded-md p-4 h-[400px] overflow-y-auto font-mono text-sm whitespace-pre-wrap">
+              {generatedContent || "O conteúdo do termo de consentimento será exibido aqui após a geração."}
             </div>
           </CardContent>
           <CardFooter className="flex justify-end">
@@ -272,7 +303,7 @@ export const CreateDocument = () => {
                   Salvando...
                 </>
               ) : (
-                "Salvar Documento"
+                "Salvar Termo"
               )}
             </Button>
           </CardFooter>
