@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Bell, Menu, User, LogOut, Settings } from 'lucide-react';
+import { Bell, Menu, User, LogOut, Settings, FileText } from 'lucide-react';
+import { NewDocumentDialog } from '@/components/signatures/NewDocumentDialog';
 import { cn } from '@/lib/utils';
 
 // Helper to get the title based on current route
@@ -21,8 +22,6 @@ const getRouteTitle = (pathname: string) => {
       return 'Dashboard';
     case '/documentos':
       return 'Documentos';
-    case '/criar-documento':
-      return 'Criar Documento';
     case '/assinaturas':
       return 'Assinaturas';
     case '/configuracoes':
@@ -39,6 +38,7 @@ type AppHeaderProps = {
 export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
   const location = useLocation();
   const title = getRouteTitle(location.pathname);
+  const [isNewDocumentDialogOpen, setIsNewDocumentDialogOpen] = useState(false);
 
   return (
     <header className="h-16 bg-white border-b border-neutral-200 sticky top-0 z-10">
@@ -56,6 +56,16 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
         </div>
 
         <div className="flex items-center gap-2">
+          {location.pathname === '/assinaturas' && (
+            <Button 
+              className="bg-medico-600 hover:bg-medico-700 mr-2"
+              onClick={() => setIsNewDocumentDialogOpen(true)}
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Novo Termo de Consentimento
+            </Button>
+          )}
+          
           <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-neutral-700">
             <Bell size={18} />
           </Button>
@@ -94,6 +104,15 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
           </DropdownMenu>
         </div>
       </div>
+
+      <NewDocumentDialog
+        isOpen={isNewDocumentDialogOpen}
+        onOpenChange={setIsNewDocumentDialogOpen}
+        onSubmit={(values) => {
+          // This will be handled by the useDocuments hook in the Signatures page
+        }}
+        isGenerating={false}
+      />
     </header>
   );
 };
