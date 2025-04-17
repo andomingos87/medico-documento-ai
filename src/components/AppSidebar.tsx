@@ -63,7 +63,7 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
         <div className="h-16 flex items-center px-4 border-b border-neutral-200">
           <div className="flex items-center gap-2 text-xl font-semibold text-medico-700">
             <FileText size={24} className="text-medico-600" />
-            <span>MedicoDoc</span>
+            <span>Smart Termos</span>
           </div>
           <Button 
             variant="ghost" 

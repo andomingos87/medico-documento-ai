@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -31,9 +30,9 @@ export const Login = () => {
         <div className="mb-8 text-center">
           <div className="flex justify-center items-center gap-2 text-2xl font-bold text-medico-700 mb-2">
             <FileText className="h-8 w-8" />
-            <span>MedicoDoc</span>
+            <span>Smart Termos</span>
           </div>
-          <p className="text-neutral-600">Sistema de geração de documentos médicos</p>
+          <p className="text-neutral-600">Sistema de geração de documentos</p>
         </div>
         
         <div className="bg-white p-8 rounded-lg border border-neutral-200 shadow-soft">
@@ -103,7 +102,7 @@ export const Login = () => {
         </div>
         
         <p className="mt-6 text-center text-xs text-neutral-500">
-          &copy; 2025 MedicoDoc. Todos os direitos reservados.
+          &copy; 2025 Smart Termos. Todos os direitos reservados.
         </p>
       </div>
     </div>
