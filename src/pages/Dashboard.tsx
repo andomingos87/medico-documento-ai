@@ -50,10 +50,10 @@ export const Dashboard = () => {
   ];
 
   const recentDocuments = [
-    { id: 1, title: 'Termo de Consentimento - Cirurgia', patient: 'João Silva', status: 'pending', date: '15/04/2025' },
-    { id: 2, title: 'Consentimento - Tratamento Invasivo', patient: 'Maria Oliveira', status: 'signed', date: '14/04/2025' },
-    { id: 3, title: 'Termo de Cirurgia Plástica', patient: 'Pedro Santos', status: 'signed', date: '13/04/2025' },
-    { id: 4, title: 'Termo de Anestesia', patient: 'Ana Costa', status: 'pending', date: '12/04/2025' },
+    { id: 1, title: 'Termo de Consentimento - Cirurgia', patient: 'João Silva', status: 'pending' as const, date: '15/04/2025' },
+    { id: 2, title: 'Consentimento - Tratamento Invasivo', patient: 'Maria Oliveira', status: 'signed' as const, date: '14/04/2025' },
+    { id: 3, title: 'Termo de Cirurgia Plástica', patient: 'Pedro Santos', status: 'signed' as const, date: '13/04/2025' },
+    { id: 4, title: 'Termo de Anestesia', patient: 'Ana Costa', status: 'pending' as const, date: '12/04/2025' },
   ];
 
   const upcomingTasks = [
@@ -83,7 +83,6 @@ export const Dashboard = () => {
             value={stat.value}
             icon={stat.icon}
             trend={stat.trend}
-            description={stat.description}
             className={stat.className}
           />
         ))}
