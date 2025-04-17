@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/select';
 
 // Tipos de procedimentos disponíveis
-const PROCEDURE_TYPES = [
+export const PROCEDURE_TYPES = [
   { id: 'botox', name: 'Toxina Botulínica (Botox)' },
   { id: 'filling', name: 'Preenchimento Facial' },
   { id: 'threads', name: 'Fios de Sustentação' },

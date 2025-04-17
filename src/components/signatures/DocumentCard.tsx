@@ -4,12 +4,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, FileText, Send } from 'lucide-react';
+import { ConsentDocument, SignedConsentDocument } from './types';
 
 interface DocumentCardProps {
-  document: Document;
+  document: ConsentDocument;
   formatDate: (dateString: string) => string;
   renderStatusBadge: (status: 'pending' | 'signed') => React.ReactNode;
-  onView: (doc: Document) => void;
+  onView: (doc: ConsentDocument) => void;
 }
 
 export const DocumentCard: React.FC<DocumentCardProps> = ({
@@ -47,11 +48,11 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
                 <>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3.5 w-3.5" />
-                    <span>Assinado em: {formatDate((document as SignedDocument).signedAt)}</span>
+                    <span>Assinado em: {formatDate((document as SignedConsentDocument).signedAt)}</span>
                   </div>
                   <div className="flex items-center gap-1 mt-1">
                     <Send className="h-3.5 w-3.5" />
-                    <span>Enviado via: {(document as SignedDocument).deliveryMethod === 'email' ? 'E-mail' : 'WhatsApp'}</span>
+                    <span>Enviado via: {(document as SignedConsentDocument).deliveryMethod === 'email' ? 'E-mail' : 'WhatsApp'}</span>
                   </div>
                 </>
               )}

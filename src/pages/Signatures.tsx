@@ -19,25 +19,24 @@ import { toast } from 'sonner';
 import { BenefitsCard } from '@/components/signatures/BenefitsCard';
 import { DocumentsTabPanel } from '@/components/signatures/DocumentsTabPanel';
 import { SearchFilterBar } from '@/components/signatures/SearchFilterBar';
-import { NewDocumentForm, NewDocumentFormValues } from '@/components/signatures/NewDocumentForm';
+import { NewDocumentForm, NewDocumentFormValues, PROCEDURE_TYPES } from '@/components/signatures/NewDocumentForm';
 import { DocumentViewDialog } from '@/components/signatures/DocumentViewDialog';
 import { 
-  Document, 
-  PendingDocument, 
-  SignedDocument, 
+  ConsentDocument, 
+  PendingConsentDocument, 
+  SignedConsentDocument, 
   PENDING_DOCUMENTS, 
   SIGNED_DOCUMENTS 
 } from '@/components/signatures/types';
 import { generateConsentText } from '@/components/signatures/ConsentTextGenerator';
-import { PROCEDURE_TYPES } from '@/components/signatures/NewDocumentForm';
 
 export const Signatures = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredStatus, setFilteredStatus] = useState('all');
-  const [documents, setDocuments] = useState<Document[]>([...PENDING_DOCUMENTS, ...SIGNED_DOCUMENTS]);
+  const [documents, setDocuments] = useState<ConsentDocument[]>([...PENDING_DOCUMENTS, ...SIGNED_DOCUMENTS]);
   const [isNewDocumentDialogOpen, setIsNewDocumentDialogOpen] = useState(false);
   const [isViewDocumentDialogOpen, setIsViewDocumentDialogOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<ConsentDocument | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [signatureData, setSignatureData] = useState<string | null>(null);
@@ -56,11 +55,11 @@ export const Signatures = () => {
   });
 
   // Documentos pendentes e assinados após filtragem
-  const pendingDocuments = filteredDocuments.filter(doc => doc.status === 'pending');
-  const signedDocuments = filteredDocuments.filter(doc => doc.status === 'signed');
+  const pendingDocuments = filteredDocuments.filter(doc => doc.status === 'pending') as PendingConsentDocument[];
+  const signedDocuments = filteredDocuments.filter(doc => doc.status === 'signed') as SignedConsentDocument[];
 
   // Gerenciamento da visualização do documento
-  const handleViewDocument = (document: Document) => {
+  const handleViewDocument = (document: ConsentDocument) => {
     setSelectedDocument(document);
     setConsentText(generateConsentText(document.procedureType, document.patientName));
     setIsViewDocumentDialogOpen(true);
@@ -72,7 +71,7 @@ export const Signatures = () => {
     
     // Simular o tempo de geração do documento
     setTimeout(() => {
-      const newDocument: PendingDocument = {
+      const newDocument: PendingConsentDocument = {
         id: `doc${documents.length + 1}`,
         patientName: values.patientName,
         procedureType: PROCEDURE_TYPES.find(p => p.id === values.procedureType)?.name || values.procedureType,

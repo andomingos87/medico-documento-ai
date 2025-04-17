@@ -1,5 +1,5 @@
 
-export interface BaseDocument {
+export interface BaseConsentDocument {
   id: string;
   patientName: string;
   procedureType: string;
@@ -9,20 +9,20 @@ export interface BaseDocument {
   status: string;
 }
 
-export interface PendingDocument extends BaseDocument {
+export interface PendingConsentDocument extends BaseConsentDocument {
   status: 'pending';
 }
 
-export interface SignedDocument extends BaseDocument {
+export interface SignedConsentDocument extends BaseConsentDocument {
   status: 'signed';
   signedAt: string;
   deliveryMethod: 'email' | 'whatsapp';
 }
 
-export type Document = PendingDocument | SignedDocument;
+export type ConsentDocument = PendingConsentDocument | SignedConsentDocument;
 
 // Dados fictícios para documentos pendentes e assinados
-export const PENDING_DOCUMENTS: PendingDocument[] = [
+export const PENDING_DOCUMENTS: PendingConsentDocument[] = [
   {
     id: 'doc1',
     patientName: 'Mariana Oliveira',
@@ -52,7 +52,7 @@ export const PENDING_DOCUMENTS: PendingDocument[] = [
   },
 ];
 
-export const SIGNED_DOCUMENTS: SignedDocument[] = [
+export const SIGNED_DOCUMENTS: SignedConsentDocument[] = [
   {
     id: 'doc4',
     patientName: 'Juliana Costa',

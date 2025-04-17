@@ -12,11 +12,12 @@ import {
   DialogClose
 } from '@/components/ui/dialog';
 import { SignatureCapture } from './SignatureCapture';
+import { ConsentDocument, SignedConsentDocument } from './types';
 
 interface DocumentViewDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedDocument: Document | null;
+  selectedDocument: ConsentDocument | null;
   consentText: string;
   signatureData: string | null;
   formatDate: (dateString: string) => string;
@@ -46,7 +47,7 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({
           <DialogDescription>
             {selectedDocument.status === 'pending' 
               ? `Solicite que o paciente leia e assine o documento abaixo`
-              : `Documento assinado em ${selectedDocument.status === 'signed' ? formatDate((selectedDocument as SignedDocument).signedAt) : ''}`
+              : `Documento assinado em ${selectedDocument.status === 'signed' ? formatDate((selectedDocument as SignedConsentDocument).signedAt) : ''}`
             }
           </DialogDescription>
         </DialogHeader>
@@ -63,7 +64,7 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({
           
           {selectedDocument.status === 'signed' && (
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-              Assinado em {formatDate((selectedDocument as SignedDocument).signedAt)}
+              Assinado em {formatDate((selectedDocument as SignedConsentDocument).signedAt)}
             </Badge>
           )}
         </div>

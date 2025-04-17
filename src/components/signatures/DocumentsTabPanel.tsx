@@ -3,13 +3,14 @@ import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import { FileText, CheckCircle } from 'lucide-react';
 import { DocumentCard } from './DocumentCard';
+import { ConsentDocument } from './types';
 
 interface DocumentsTabPanelProps {
   value: string;
-  documents: Document[];
+  documents: ConsentDocument[];
   formatDate: (dateString: string) => string;
   renderStatusBadge: (status: 'pending' | 'signed') => React.ReactNode;
-  onView: (doc: Document) => void;
+  onView: (doc: ConsentDocument) => void;
 }
 
 export const DocumentsTabPanel: React.FC<DocumentsTabPanelProps> = ({ 
