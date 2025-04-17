@@ -56,15 +56,13 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
         </div>
 
         <div className="flex items-center gap-2">
-          {location.pathname === '/assinaturas' && (
-            <Button 
-              className="bg-medico-600 hover:bg-medico-700 mr-2"
-              onClick={() => setIsNewDocumentDialogOpen(true)}
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Novo Termo de Consentimento
-            </Button>
-          )}
+          <Button 
+            className="bg-medico-600 hover:bg-medico-700 mr-2"
+            onClick={() => setIsNewDocumentDialogOpen(true)}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Novo Termo de Consentimento
+          </Button>
           
           <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-neutral-700">
             <Bell size={18} />
