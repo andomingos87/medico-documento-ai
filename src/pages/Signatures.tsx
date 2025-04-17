@@ -25,7 +25,7 @@ import { useForm } from 'react-hook-form';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sparkles, Clock, CheckCircle, Calendar, Search, Filter, TabletsSmartphone, Send, FileText, PenTool, User, ShieldCheck } from 'lucide-react';
+import { Sparkles, Clock, CheckCircle, Calendar, Search, Filter, TabletSmartphone, Send, FileText, PenTool, User, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Tipos de procedimentos disponíveis
@@ -39,8 +39,31 @@ const PROCEDURE_TYPES = [
   { id: 'bioestimulator', name: 'Bioestimulador de Colágeno' },
 ];
 
+// Types for documents
+interface BaseDocument {
+  id: string;
+  patientName: string;
+  procedureType: string;
+  appointmentDate: string;
+  readingTime: number;
+  createdAt: string;
+  status: string;
+}
+
+interface PendingDocument extends BaseDocument {
+  status: 'pending';
+}
+
+interface SignedDocument extends BaseDocument {
+  status: 'signed';
+  signedAt: string;
+  deliveryMethod: 'email' | 'whatsapp';
+}
+
+type Document = PendingDocument | SignedDocument;
+
 // Dados fictícios para documentos pendentes e assinados
-const PENDING_DOCUMENTS = [
+const PENDING_DOCUMENTS: PendingDocument[] = [
   {
     id: 'doc1',
     patientName: 'Mariana Oliveira',
@@ -70,7 +93,7 @@ const PENDING_DOCUMENTS = [
   },
 ];
 
-const SIGNED_DOCUMENTS = [
+const SIGNED_DOCUMENTS: SignedDocument[] = [
   {
     id: 'doc4',
     patientName: 'Juliana Costa',
@@ -106,10 +129,10 @@ export const Signatures = () => {
   const isMobile = useIsMobile();
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredStatus, setFilteredStatus] = useState('all');
-  const [documents, setDocuments] = useState([...PENDING_DOCUMENTS, ...SIGNED_DOCUMENTS]);
+  const [documents, setDocuments] = useState<Document[]>([...PENDING_DOCUMENTS, ...SIGNED_DOCUMENTS]);
   const [isNewDocumentDialogOpen, setIsNewDocumentDialogOpen] = useState(false);
   const [isViewDocumentDialogOpen, setIsViewDocumentDialogOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<any>(null);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [signatureData, setSignatureData] = useState<string | null>(null);
@@ -141,7 +164,7 @@ export const Signatures = () => {
   const signedDocuments = filteredDocuments.filter(doc => doc.status === 'signed');
 
   // Gerenciamento da visualização do documento
-  const handleViewDocument = (document: any) => {
+  const handleViewDocument = (document: Document) => {
     setSelectedDocument(document);
     
     // Gerando texto de consentimento fictício baseado no tipo de procedimento
@@ -168,7 +191,7 @@ export const Signatures = () => {
     
     // Simular o tempo de geração do documento
     setTimeout(() => {
-      const newDocument = {
+      const newDocument: PendingDocument = {
         id: `doc${documents.length + 1}`,
         patientName: values.patientName,
         procedureType: PROCEDURE_TYPES.find(p => p.id === values.procedureType)?.name || values.procedureType,
@@ -205,12 +228,12 @@ export const Signatures = () => {
     // Simular o tempo de processamento da assinatura
     setTimeout(() => {
       const updatedDocuments = documents.map(doc => {
-        if (doc.id === selectedDocument.id) {
+        if (doc.id === selectedDocument?.id) {
           return {
             ...doc,
-            status: 'signed',
+            status: 'signed' as const,
             signedAt: new Date().toISOString(),
-            deliveryMethod: 'email',
+            deliveryMethod: 'email' as const,
           };
         }
         return doc;
@@ -405,7 +428,7 @@ export const Signatures = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex items-start space-x-4">
                 <div className="bg-medico-100 p-3 rounded-lg">
-                  <TabletsSmartphone className="h-6 w-6 text-medico-600" />
+                  <TabletSmartphone className="h-6 w-6 text-medico-600" />
                 </div>
                 <div>
                   <h3 className="font-medium text-neutral-900">Experiência Mobile</h3>
@@ -568,7 +591,7 @@ export const Signatures = () => {
                             <div className="flex flex-col text-sm text-neutral-500">
                               <div className="flex items-center gap-1">
                                 <Calendar className="h-3.5 w-3.5" />
-                                <span>Assinado em: {formatDate(doc.signedAt || '')}</span>
+                                <span>Assinado em: {formatDate(doc.signedAt)}</span>
                               </div>
                               <div className="flex items-center gap-1 mt-1">
                                 <Send className="h-3.5 w-3.5" />
@@ -607,7 +630,7 @@ export const Signatures = () => {
               <DialogDescription>
                 {selectedDocument.status === 'pending' 
                   ? `Solicite que o paciente leia e assine o documento abaixo`
-                  : `Documento assinado em ${formatDate(selectedDocument.signedAt || '')}`
+                  : `Documento assinado em ${selectedDocument.status === 'signed' ? formatDate((selectedDocument as SignedDocument).signedAt) : ''}`
                 }
               </DialogDescription>
             </DialogHeader>
@@ -624,7 +647,7 @@ export const Signatures = () => {
               
               {selectedDocument.status === 'signed' && (
                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  Assinado em {formatDate(selectedDocument.signedAt || '')}
+                  Assinado em {formatDate((selectedDocument as SignedDocument).signedAt)}
                 </Badge>
               )}
             </div>
