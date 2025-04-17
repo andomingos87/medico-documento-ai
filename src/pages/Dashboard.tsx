@@ -1,6 +1,14 @@
 
 import React from 'react';
-import { FileText, FilePlus, FileCheck, Users, Calendar, Clock } from 'lucide-react';
+import { 
+  FileText, 
+  FilePlus, 
+  FileCheck, 
+  FileSignature, 
+  Calendar, 
+  Clock, 
+  AlertCircle
+} from 'lucide-react';
 import { StatCard } from '@/components/StatCard';
 import { 
   Card, 
@@ -9,6 +17,7 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
+import { createStatusBadge } from '@/lib/statusBadgeUtils';
 
 export const Dashboard = () => {
   // Dados fictícios para os gráficos e stats
@@ -28,32 +37,44 @@ export const Dashboard = () => {
     { 
       title: 'Pendentes de Assinatura', 
       value: '23', 
-      icon: FileText, 
-      trend: { value: 3, isPositive: false } 
+      icon: FileSignature, 
+      trend: { value: 3, isPositive: false },
+      className: 'border-l-4 border-yellow-400'
     },
     { 
-      title: 'Usuários Ativos', 
-      value: '8', 
-      icon: Users,
-      description: 'Últimos 30 dias' 
+      title: 'Expiram em 24h', 
+      value: '5', 
+      icon: AlertCircle,
+      className: 'border-l-4 border-red-400'
     },
   ];
 
   const recentDocuments = [
-    { id: 1, title: 'Atestado Médico - João Silva', type: 'Atestado', date: '15/04/2025' },
-    { id: 2, title: 'Receita - Maria Oliveira', type: 'Receita', date: '14/04/2025' },
-    { id: 3, title: 'Laudo Médico - Pedro Santos', type: 'Laudo', date: '13/04/2025' },
-    { id: 4, title: 'Solicitação de Exame - Ana Costa', type: 'Solicitação', date: '12/04/2025' },
+    { id: 1, title: 'Termo de Consentimento - Cirurgia', patient: 'João Silva', status: 'pending', date: '15/04/2025' },
+    { id: 2, title: 'Consentimento - Tratamento Invasivo', patient: 'Maria Oliveira', status: 'signed', date: '14/04/2025' },
+    { id: 3, title: 'Termo de Cirurgia Plástica', patient: 'Pedro Santos', status: 'signed', date: '13/04/2025' },
+    { id: 4, title: 'Termo de Anestesia', patient: 'Ana Costa', status: 'pending', date: '12/04/2025' },
   ];
 
   const upcomingTasks = [
-    { id: 1, title: 'Assinar laudo do paciente José', time: '15:30', date: 'Hoje' },
-    { id: 2, title: 'Revisar documentação da clínica', time: '10:00', date: 'Amanhã' },
-    { id: 3, title: 'Atualizar receitas padrão', time: '14:00', date: 'Sexta-feira' },
+    { id: 1, title: 'Enviar lembrete para João Silva', time: '15:30', date: 'Hoje', priority: 'high' },
+    { id: 2, title: 'Revisar termo de consentimento padrão', time: '10:00', date: 'Amanhã', priority: 'medium' },
+    { id: 3, title: 'Validar assinaturas pendentes', time: '14:00', date: 'Sexta-feira', priority: 'low' },
   ];
+
+  const priorityClasses = {
+    high: 'bg-red-600',
+    medium: 'bg-yellow-500',
+    low: 'bg-green-500'
+  };
 
   return (
     <div className="space-y-6">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold text-neutral-900">Visão Geral</h1>
+        <p className="text-neutral-500">Resumo dos seus documentos e assinaturas</p>
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (
           <StatCard
@@ -63,6 +84,7 @@ export const Dashboard = () => {
             icon={stat.icon}
             trend={stat.trend}
             description={stat.description}
+            className={stat.className}
           />
         ))}
       </div>
@@ -71,7 +93,7 @@ export const Dashboard = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Documentos Recentes</CardTitle>
-            <CardDescription>Últimos documentos gerados</CardDescription>
+            <CardDescription>Últimos termos de consentimento</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -80,7 +102,10 @@ export const Dashboard = () => {
                   <FileText className="mr-3 h-5 w-5 text-medico-600" />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-neutral-900 truncate">{doc.title}</p>
-                    <p className="text-xs text-neutral-500">{doc.type}</p>
+                    <p className="text-xs text-neutral-500">{doc.patient}</p>
+                  </div>
+                  <div className="text-xs mr-2">
+                    {createStatusBadge(doc.status)}
                   </div>
                   <div className="text-xs text-neutral-500 flex items-center">
                     <Calendar className="mr-1 h-3 w-3" />
@@ -94,14 +119,14 @@ export const Dashboard = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Tarefas Próximas</CardTitle>
-            <CardDescription>Atividades agendadas</CardDescription>
+            <CardTitle className="text-lg">Tarefas Pendentes</CardTitle>
+            <CardDescription>Ações relacionadas a documentos</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {upcomingTasks.map((task) => (
                 <div key={task.id} className="flex items-center p-2 hover:bg-neutral-50 rounded-md">
-                  <div className="w-2 h-2 rounded-full bg-medico-600 mr-3" />
+                  <div className={`w-2 h-2 rounded-full ${priorityClasses[task.priority]} mr-3`} />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-neutral-900 truncate">{task.title}</p>
                     <p className="text-xs text-neutral-500">{task.date}</p>
