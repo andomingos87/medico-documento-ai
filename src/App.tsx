@@ -12,6 +12,7 @@ import { DocumentsList } from "./pages/DocumentsList";
 import { ViewDocument } from "./pages/ViewDocument";
 import { Signatures } from "./pages/Signatures";
 import { Settings } from "./pages/Settings";
+import { Patients } from "./pages/Patients";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
               {/* Redirect /criar-documento to /documentos */}
               <Route path="/criar-documento" element={<Navigate to="/documentos" replace />} />
               <Route path="/assinaturas" element={<Signatures />} />
+              <Route path="/pacientes" element={<Patients />} />
               <Route path="/configuracoes" element={<Settings />} />
             </Route>
 
