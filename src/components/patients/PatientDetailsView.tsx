@@ -5,17 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDate } from '@/lib/formatDate';
 
 interface PatientDetailsViewProps {
   patient: Patient;
 }
 
 export const PatientDetailsView = ({ patient }: PatientDetailsViewProps) => {
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
-  };
-
   const getStatusBadge = (status: PatientDocument['status']) => {
     switch (status) {
       case 'draft':

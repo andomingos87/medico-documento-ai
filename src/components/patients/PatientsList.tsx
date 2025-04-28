@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Patient } from './types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/formatDate';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PatientDetailsView } from './PatientDetailsView';
 
@@ -13,11 +13,6 @@ interface PatientsListProps {
 
 export const PatientsList = ({ patients }: PatientsListProps) => {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
-  };
 
   const handleViewDetails = (patient: Patient) => {
     setSelectedPatient(patient);
