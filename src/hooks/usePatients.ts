@@ -122,7 +122,7 @@ export const usePatients = () => {
   const [patients] = useState<Patient[]>(mockPatients);
   const [filters, setFilters] = useState<FilterOptions>({
     search: '',
-    gender: '',
+    gender: 'all',
     dateRange: undefined,
     sortBy: 'name',
     sortDirection: 'asc'
@@ -139,7 +139,7 @@ export const usePatients = () => {
         }
         
         // Gender filter
-        if (filters.gender && patient.gender !== filters.gender) {
+        if (filters.gender && filters.gender !== 'all' && patient.gender !== filters.gender) {
           return false;
         }
         

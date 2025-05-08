@@ -19,7 +19,7 @@ export const PatientFilterBar = ({ filters, onFilterChange, totalResults }: Pati
 
   const handleGenderChange = (value: string) => {
     onFilterChange({ 
-      gender: value as 'male' | 'female' | 'other' | '' 
+      gender: value as 'male' | 'female' | 'other' | 'all' 
     });
   };
 
@@ -50,12 +50,12 @@ export const PatientFilterBar = ({ filters, onFilterChange, totalResults }: Pati
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-          <Select value={filters.gender || ''} onValueChange={handleGenderChange}>
+          <Select value={filters.gender || 'all'} onValueChange={handleGenderChange}>
             <SelectTrigger className="w-[150px] h-9">
               <SelectValue placeholder="Gênero" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
               <SelectItem value="male">Masculino</SelectItem>
               <SelectItem value="female">Feminino</SelectItem>
               <SelectItem value="other">Outro</SelectItem>

@@ -31,7 +31,7 @@ export interface PatientDocument {
 
 export type FilterOptions = {
   search: string;
-  gender?: 'male' | 'female' | 'other' | '';
+  gender?: 'male' | 'female' | 'other' | 'all' | '';
   dateRange?: { from: Date | undefined; to: Date | undefined };
   sortBy: 'name' | 'createdAt' | 'updatedAt';
   sortDirection: 'asc' | 'desc';
