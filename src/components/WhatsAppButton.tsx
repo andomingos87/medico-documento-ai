@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Whatsapp } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -33,7 +33,7 @@ export const WhatsAppButton = ({
       size="icon"
       aria-label="Suporte via WhatsApp"
     >
-      <Whatsapp className="h-7 w-7" />
+      <MessageCircle className="h-7 w-7" />
     </Button>
   );
 };

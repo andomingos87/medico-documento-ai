@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { AppSidebar } from '@/components/AppSidebar';
 import { AppHeader } from '@/components/AppHeader';
+import { WhatsAppButton } from '@/components/WhatsAppButton';
 
 export const AppLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,6 +22,8 @@ export const AppLayout = () => {
           <Outlet />
         </main>
       </div>
+      
+      <WhatsAppButton />
     </div>
   );
 };
