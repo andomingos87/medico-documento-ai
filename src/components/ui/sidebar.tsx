@@ -66,7 +66,7 @@ const SidebarProvider = React.forwardRef<
     },
     ref
   ) => {
-    const isMobile = useIsMobile()
+    const isMobile = useMediaQuery("(max-width: 768px)")
     const [openMobile, setOpenMobile] = React.useState(false)
 
     // This is the internal state of the sidebar.
