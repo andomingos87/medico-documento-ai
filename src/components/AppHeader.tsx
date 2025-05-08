@@ -11,9 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Bell, Menu, User, LogOut, Settings, FileText } from 'lucide-react';
+import { Bell, Menu, User, LogOut, Settings, FileText, Star } from 'lucide-react';
 import { NewDocumentDialog } from '@/components/signatures/NewDocumentDialog';
 import { cn } from '@/lib/utils';
+import { UpgradePlanButton } from '@/components/UpgradePlanButton';
 
 // Helper to get the title based on current route
 const getRouteTitle = (pathname: string) => {
@@ -56,6 +57,8 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
         </div>
 
         <div className="flex items-center gap-2">
+          <UpgradePlanButton />
+          
           <Button 
             className="bg-medico-600 hover:bg-medico-700 mr-2"
             onClick={() => setIsNewDocumentDialogOpen(true)}
