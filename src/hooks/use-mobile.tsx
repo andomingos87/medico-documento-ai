@@ -24,3 +24,8 @@ export function useMediaQuery(query: string): boolean {
 
   return matches;
 }
+
+// Add useIsMobile hook that leverages useMediaQuery for mobile detection
+export function useIsMobile(): boolean {
+  return useMediaQuery("(max-width: 768px)");
+}
