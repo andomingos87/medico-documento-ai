@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -40,6 +42,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
   const location = useLocation();
   const title = getRouteTitle(location.pathname);
   const [isNewDocumentDialogOpen, setIsNewDocumentDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <header className="h-16 bg-white border-b border-neutral-200 sticky top-0 z-10">
@@ -97,7 +100,12 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
                 <span>Configurações</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  navigate('/login');
+                }}
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>
               </DropdownMenuItem>
