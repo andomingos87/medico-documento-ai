@@ -13,6 +13,7 @@ import { ViewDocument } from "./pages/ViewDocument";
 import { Signatures } from "./pages/Signatures";
 import { Settings } from "./pages/Settings";
 import { Patients } from "./pages/Patients";
+import { Register } from "./pages/Register";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               {/* Rotas protegidas dentro do layout */}
               <Route element={<AppLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />

@@ -43,6 +43,27 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
   const title = getRouteTitle(location.pathname);
   const [isNewDocumentDialogOpen, setIsNewDocumentDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    async function fetchUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email);
+        // Buscar nome na tabela profiles
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('nome')
+          .eq('id', user.id)
+          .single();
+        if (profile && profile.nome) {
+          setUserName(profile.nome);
+        }
+      }
+    }
+    fetchUser();
+  }, []);
 
   return (
     <header className="h-16 bg-white border-b border-neutral-200 sticky top-0 z-10">
@@ -86,8 +107,12 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">Dr. Ricardo Silva</p>
-                  <p className="text-xs leading-none text-neutral-500">dr.ricardo@exemplo.com.br</p>
+                  <p className="text-sm font-medium leading-none">
+  {userName ? userName : userEmail}
+</p>
+<p className="text-xs leading-none text-neutral-500">
+  {userEmail}
+</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
