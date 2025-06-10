@@ -17,38 +17,39 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            
-            {/* Rotas protegidas dentro do layout */}
-            <Route element={<AppLayout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/documentos" element={<DocumentsList />} />
-              <Route path="/documentos/:id" element={<ViewDocument />} />
-              {/* Redirect /criar-documento to /documentos */}
-              <Route path="/criar-documento" element={<Navigate to="/documentos" replace />} />
-              <Route path="/assinaturas" element={<Signatures />} />
-              <Route path="/pacientes" element={<Patients />} />
-              <Route path="/configuracoes" element={<Settings />} />
-            </Route>
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
+import { supabase } from './supabaseClient';
 
-            {/* Redirect da página inicial para o dashboard */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            
-            {/* Página 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+const App = () => (
+  <SessionContextProvider supabaseClient={supabase}>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              {/* Rotas protegidas dentro do layout */}
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/documentos" element={<DocumentsList />} />
+                <Route path="/documentos/:id" element={<ViewDocument />} />
+                <Route path="/criar-documento" element={<Navigate to="/documentos" replace />} />
+                <Route path="/assinaturas" element={<Signatures />} />
+                <Route path="/pacientes" element={<Patients />} />
+                <Route path="/configuracoes" element={<Settings />} />
+              </Route>
+              {/* Redirect da página inicial para o dashboard */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              {/* Página 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </SessionContextProvider>
 );
 
 export default App;

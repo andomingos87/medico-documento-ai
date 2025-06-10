@@ -6,22 +6,27 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FileText, Lock } from 'lucide-react';
 
+import { supabase } from '../supabaseClient';
+
 export const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulando autenticação
-    setTimeout(() => {
-      setIsLoading(false);
+    setError(null);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setIsLoading(false);
+    if (error) {
+      setError(error.message);
+    } else {
       navigate('/dashboard');
-    }, 1500);
+    }
   };
 
   return (
@@ -89,6 +94,10 @@ export const Login = () => {
             >
               {isLoading ? "Entrando..." : "Entrar"}
             </Button>
+            {error && (
+              <div className="text-red-600 text-sm text-center mt-2">{error}</div>
+            )}
+
           </form>
           
           <div className="mt-6 pt-6 border-t border-neutral-200 text-center">
