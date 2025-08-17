@@ -39,13 +39,13 @@ export const Dashboard = () => {
       value: '23', 
       icon: FileSignature, 
       trend: { value: 3, isPositive: false },
-      className: 'border-l-4 border-yellow-400'
+      className: 'border-l-4 border-warning'
     },
     { 
       title: 'Expiram em 24h', 
       value: '5', 
       icon: AlertCircle,
-      className: 'border-l-4 border-red-400'
+      className: 'border-l-4 border-destructive'
     },
   ];
 
@@ -63,16 +63,16 @@ export const Dashboard = () => {
   ];
 
   const priorityClasses = {
-    high: 'bg-red-600',
-    medium: 'bg-yellow-500',
-    low: 'bg-green-500'
+    high: 'bg-destructive',
+    medium: 'bg-warning',
+    low: 'bg-success'
   };
 
   return (
     <div className="space-y-6">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold text-neutral-900">Visão Geral</h1>
-        <p className="text-neutral-500">Resumo dos seus documentos e assinaturas</p>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-foreground">Visão Geral</h1>
+        <p className="text-muted-foreground mt-1">Resumo dos seus documentos e assinaturas</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -97,17 +97,17 @@ export const Dashboard = () => {
           <CardContent>
             <div className="space-y-3">
               {recentDocuments.map((doc) => (
-                <div key={doc.id} className="flex items-center p-2 hover:bg-neutral-50 rounded-md">
-                  <FileText className="mr-3 h-5 w-5 text-medico-600" />
+                <div key={doc.id} className="flex items-center p-3 hover:bg-muted/50 rounded-lg transition-smooth">
+                  <FileText className="mr-3 h-5 w-5 text-primary" />
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-neutral-900 truncate">{doc.title}</p>
-                    <p className="text-xs text-neutral-500">{doc.patient}</p>
+                    <p className="font-semibold text-card-foreground truncate">{doc.title}</p>
+                    <p className="text-sm text-muted-foreground">{doc.patient}</p>
                   </div>
-                  <div className="text-xs mr-2">
+                  <div className="text-xs mr-3">
                     {createStatusBadge(doc.status)}
                   </div>
-                  <div className="text-xs text-neutral-500 flex items-center">
-                    <Calendar className="mr-1 h-3 w-3" />
+                  <div className="text-sm text-muted-foreground flex items-center">
+                    <Calendar className="mr-1 h-4 w-4" />
                     {doc.date}
                   </div>
                 </div>
@@ -124,14 +124,14 @@ export const Dashboard = () => {
           <CardContent>
             <div className="space-y-3">
               {upcomingTasks.map((task) => (
-                <div key={task.id} className="flex items-center p-2 hover:bg-neutral-50 rounded-md">
-                  <div className={`w-2 h-2 rounded-full ${priorityClasses[task.priority]} mr-3`} />
+                <div key={task.id} className="flex items-center p-3 hover:bg-muted/50 rounded-lg transition-smooth">
+                  <div className={`w-3 h-3 rounded-full ${priorityClasses[task.priority]} mr-3`} />
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-neutral-900 truncate">{task.title}</p>
-                    <p className="text-xs text-neutral-500">{task.date}</p>
+                    <p className="font-semibold text-card-foreground truncate">{task.title}</p>
+                    <p className="text-sm text-muted-foreground">{task.date}</p>
                   </div>
-                  <div className="text-xs text-neutral-500 flex items-center">
-                    <Clock className="mr-1 h-3 w-3" />
+                  <div className="text-sm text-muted-foreground flex items-center">
+                    <Clock className="mr-1 h-4 w-4" />
                     {task.time}
                   </div>
                 </div>

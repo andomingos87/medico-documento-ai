@@ -8,14 +8,14 @@ import { Badge } from '@/components/ui/badge';
 export const createStatusBadge = (status: 'pending' | 'signed'): JSX.Element => {
   if (status === 'pending') {
     return (
-      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+      <Badge variant="outline" className="bg-warning/10 text-warning-foreground border-warning/20 font-medium">
         Pendente
       </Badge>
     );
   }
   
   return (
-    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+    <Badge variant="outline" className="bg-success/10 text-success-foreground border-success/20 font-medium">
       Assinado
     </Badge>
   );

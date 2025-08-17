@@ -13,7 +13,7 @@ export const AppLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex">
+    <div className="min-h-screen bg-background flex">
       <AppSidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       
       <div className="flex-1 lg:ml-64">

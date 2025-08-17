@@ -25,35 +25,41 @@ export const StatCard = ({
 }: StatCardProps) => {
   return (
     <div className={cn(
-      "bg-white rounded-lg border border-neutral-200 p-5 shadow-card",
+      "bg-card rounded-lg border border-border p-6 shadow-soft transition-smooth hover:shadow-elegant",
+      "relative overflow-hidden",
       className
     )}>
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-sm font-medium text-neutral-500">{title}</p>
-          <h3 className="text-2xl font-semibold mt-1 text-neutral-900">{value}</h3>
+      <div className="flex justify-between items-start relative z-10">
+        <div className="flex-1">
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <h3 className="text-3xl font-bold mt-2 text-card-foreground">{value}</h3>
           
           {trend && (
-            <div className="mt-1 flex items-center">
+            <div className="mt-2 flex items-center">
               <span className={cn(
-                "text-xs font-medium",
-                trend.isPositive ? "text-green-600" : "text-red-600"
+                "text-sm font-semibold px-2 py-1 rounded-full",
+                trend.isPositive 
+                  ? "text-success-foreground bg-success/10" 
+                  : "text-destructive-foreground bg-destructive/10"
               )}>
-                {trend.isPositive ? "+" : "-"}{trend.value}%
+                {trend.isPositive ? "+" : ""}{trend.value}%
               </span>
-              <span className="text-xs text-neutral-500 ml-1">este mês</span>
+              <span className="text-xs text-muted-foreground ml-2">este mês</span>
             </div>
           )}
           
           {description && (
-            <p className="mt-1 text-xs text-neutral-500">{description}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{description}</p>
           )}
         </div>
         
-        <div className="p-2 rounded-full bg-medico-50">
-          <Icon size={18} className="text-medico-600" />
+        <div className="p-3 rounded-xl bg-primary/10 hover-glow transition-smooth">
+          <Icon size={24} className="text-primary" />
         </div>
       </div>
+      
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-subtle opacity-50 pointer-events-none" />
     </div>
   );
 };
