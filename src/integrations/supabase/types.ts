@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      patients: {
+        Row: {
+          birth_date: string
+          city: string | null
+          complement: string | null
+          cpf: string
+          created_at: string
+          deleted_at: string | null
+          email: string
+          gender: string
+          id: string
+          name: string
+          neighborhood: string | null
+          number: string | null
+          phone: string
+          state: string | null
+          street: string | null
+          updated_at: string
+          zip_code: string | null
+        }
+        Insert: {
+          birth_date: string
+          city?: string | null
+          complement?: string | null
+          cpf: string
+          created_at?: string
+          deleted_at?: string | null
+          email: string
+          gender: string
+          id?: string
+          name: string
+          neighborhood?: string | null
+          number?: string | null
+          phone: string
+          state?: string | null
+          street?: string | null
+          updated_at?: string
+          zip_code?: string | null
+        }
+        Update: {
+          birth_date?: string
+          city?: string | null
+          complement?: string | null
+          cpf?: string
+          created_at?: string
+          deleted_at?: string | null
+          email?: string
+          gender?: string
+          id?: string
+          name?: string
+          neighborhood?: string | null
+          number?: string | null
+          phone?: string
+          state?: string | null
+          street?: string | null
+          updated_at?: string
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
