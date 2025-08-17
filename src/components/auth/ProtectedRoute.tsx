@@ -1,21 +1,22 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FileText } from 'lucide-react';
 
-const Index = () => {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-md space-y-4">
           <div className="text-center mb-8">
-            <div className="flex justify-center items-center gap-2 text-2xl font-bold text-primary mb-2">
-              <FileText className="h-8 w-8" />
-              <span>Smart Termos</span>
-            </div>
+            <Skeleton className="h-8 w-32 mx-auto mb-2" />
             <Skeleton className="h-4 w-48 mx-auto" />
           </div>
           <div className="bg-card p-8 rounded-lg border border-border shadow-soft">
@@ -37,11 +38,10 @@ const Index = () => {
     );
   }
 
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
+  if (!user) {
+    // Save the attempted location for redirect after login
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return <Navigate to="/login" replace />;
+  return <>{children}</>;
 };
-
-export default Index;

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+import { useAuth } from '@/contexts/AuthContext';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -40,33 +40,21 @@ type AppHeaderProps = {
 
 export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const title = getRouteTitle(location.pathname);
   const [isNewDocumentDialogOpen, setIsNewDocumentDialogOpen] = useState(false);
-  const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null);
+  const { user, signOut } = useAuth();
 
-  React.useEffect(() => {
-    async function fetchUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserEmail(user.email);
-        // Buscar nome na tabela profiles
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('nome')
-          .eq('id', user.id)
-          .single();
-        if (profile && profile.nome) {
-          setUserName(profile.nome);
-        }
-      }
-    }
-    fetchUser();
-  }, []);
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
+  const userEmail = user?.email || '';
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/login');
+  };
 
   return (
-    <header className="h-16 bg-white border-b border-neutral-200 sticky top-0 z-10">
+    <header className="h-16 bg-background border-b border-border sticky top-0 z-10">
       <div className="h-full px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button 
@@ -77,7 +65,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
           >
             <Menu size={20} />
           </Button>
-          <h1 className="text-xl font-semibold text-neutral-900">{title}</h1>
+          <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         </div>
 
         <div className="flex items-center gap-2">
@@ -92,7 +80,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
             Novo Termo
           </Button>
           
-          <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-neutral-700">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
             <Bell size={18} />
           </Button>
 
@@ -111,7 +99,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
                   <p className="text-sm font-medium leading-none">
   {userName ? userName : userEmail}
 </p>
-<p className="text-xs leading-none text-neutral-500">
+<p className="text-xs leading-none text-muted-foreground">
   {userEmail}
 </p>
                 </div>
@@ -127,10 +115,8 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={async () => {
-                  await supabase.auth.signOut();
-                  navigate('/login');
-                }}
+                className="text-destructive cursor-pointer"
+                onClick={handleSignOut}
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>

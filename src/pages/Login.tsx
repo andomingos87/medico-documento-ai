@@ -1,33 +1,38 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { PrimaryActionButton } from '@/components/ui/primary-action-button';
-import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FileText, Lock } from 'lucide-react';
-
-import { supabase } from '../supabaseClient';
+import { FileText } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { ForgotPasswordDialog } from '@/components/auth/ForgotPasswordDialog';
 
 export const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const { signIn, loading, user } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      const from = location.state?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setIsLoading(false);
-    if (error) {
-      setError(error.message);
-    } else {
-      navigate('/dashboard');
+    const { error } = await signIn(email, password);
+    
+    if (!error) {
+      const from = location.state?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
     }
   };
 
@@ -61,9 +66,13 @@ export const Login = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Senha</Label>
-                <a href="#" className="text-xs text-primary hover:text-primary-highlight">
+                <button 
+                  type="button"
+                  onClick={() => setIsForgotPasswordOpen(true)}
+                  className="text-xs text-primary hover:text-primary-highlight transition-colors"
+                >
                   Esqueceu a senha?
-                </a>
+                </button>
               </div>
               <Input
                 id="password"
@@ -92,14 +101,12 @@ export const Login = () => {
             <PrimaryActionButton 
               type="submit" 
               className="w-full"
-              isLoading={isLoading}
+              isLoading={loading}
               loadingText="Entrando..."
+              disabled={!email || !password}
             >
               Entrar
             </PrimaryActionButton>
-            {error && (
-              <div className="text-red-600 text-sm text-center mt-2">{error}</div>
-            )}
 
           </form>
           
@@ -113,10 +120,15 @@ export const Login = () => {
           </div>
         </div>
         
-        <p className="mt-6 text-center text-xs text-neutral-500">
+        <p className="mt-6 text-center text-xs text-muted-foreground">
           &copy; 2025 Smart Termos. Todos os direitos reservados.
         </p>
       </div>
+      
+      <ForgotPasswordDialog 
+        open={isForgotPasswordOpen}
+        onOpenChange={setIsForgotPasswordOpen}
+      />
     </div>
   );
 };

@@ -14,16 +14,16 @@ import { Signatures } from "./pages/Signatures";
 import { Settings } from "./pages/Settings";
 import { Patients } from "./pages/Patients";
 import { Register } from "./pages/Register";
+import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
-import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { supabase } from './supabaseClient';
-
 const App = () => (
-  <SessionContextProvider supabaseClient={supabase}>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <TooltipProvider>
           <Toaster />
@@ -33,7 +33,11 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               {/* Rotas protegidas dentro do layout */}
-              <Route element={<AppLayout />}>
+              <Route element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/documentos" element={<DocumentsList />} />
                 <Route path="/documentos/:id" element={<ViewDocument />} />
@@ -42,16 +46,16 @@ const App = () => (
                 <Route path="/pacientes" element={<Patients />} />
                 <Route path="/configuracoes" element={<Settings />} />
               </Route>
-              {/* Redirect da página inicial para o dashboard */}
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              {/* Página inicial com redirecionamento inteligente */}
+              <Route path="/" element={<Index />} />
               {/* Página 404 */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
-    </QueryClientProvider>
-  </SessionContextProvider>
+    </AuthProvider>
+  </QueryClientProvider>
 );
 
 export default App;
