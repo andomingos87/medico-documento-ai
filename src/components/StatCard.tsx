@@ -37,10 +37,10 @@ export const StatCard = ({
           {trend && (
             <div className="mt-2 flex items-center">
               <span className={cn(
-                "text-sm font-semibold px-2 py-1 rounded-full",
+                "text-sm font-bold px-2 py-1 rounded-full border",
                 trend.isPositive 
-                  ? "text-success-foreground bg-success/10" 
-                  : "text-destructive-foreground bg-destructive/10"
+                  ? "text-success bg-success/20 border-success/30" 
+                  : "text-destructive bg-destructive/20 border-destructive/30"
               )}>
                 {trend.isPositive ? "+" : ""}{trend.value}%
               </span>
