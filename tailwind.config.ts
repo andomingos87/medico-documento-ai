@@ -28,7 +28,8 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					glow: 'hsl(var(--primary-glow))'
+					glow: 'hsl(var(--primary-glow))',
+					highlight: 'hsl(var(--primary-highlight))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -40,11 +41,35 @@ export default {
 				},
 				success: {
 					DEFAULT: 'hsl(var(--success))',
-					foreground: 'hsl(var(--success-foreground))'
+					foreground: 'hsl(var(--success-foreground))',
+					highlight: 'hsl(var(--success-highlight))'
 				},
 				warning: {
 					DEFAULT: 'hsl(var(--warning))',
-					foreground: 'hsl(var(--warning-foreground))'
+					foreground: 'hsl(var(--warning-foreground))',
+					highlight: 'hsl(var(--warning-highlight))'
+				},
+				info: {
+					DEFAULT: 'hsl(var(--info))',
+					foreground: 'hsl(var(--info-foreground))',
+					highlight: 'hsl(var(--info-highlight))'
+				},
+				danger: {
+					DEFAULT: 'hsl(var(--danger))',
+					foreground: 'hsl(var(--danger-foreground))',
+					highlight: 'hsl(var(--danger-highlight))'
+				},
+				'priority-high': {
+					DEFAULT: 'hsl(var(--priority-high))',
+					foreground: 'hsl(var(--priority-high-foreground))'
+				},
+				'priority-medium': {
+					DEFAULT: 'hsl(var(--priority-medium))',
+					foreground: 'hsl(var(--priority-medium-foreground))'
+				},
+				'priority-low': {
+					DEFAULT: 'hsl(var(--priority-low))',
+					foreground: 'hsl(var(--priority-low-foreground))'
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',

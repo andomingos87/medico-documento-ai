@@ -8,15 +8,38 @@ import { Badge } from '@/components/ui/badge';
 export const createStatusBadge = (status: 'pending' | 'signed'): JSX.Element => {
   if (status === 'pending') {
     return (
-      <Badge variant="outline" className="bg-warning/10 text-warning-foreground border-warning/20 font-medium">
+      <Badge variant="warning">
         Pendente
       </Badge>
     );
   }
   
   return (
-    <Badge variant="outline" className="bg-success/10 text-success-foreground border-success/20 font-medium">
+    <Badge variant="success">
       Assinado
+    </Badge>
+  );
+};
+
+/**
+ * Creates a priority badge with appropriate styling
+ */
+export const createPriorityBadge = (priority: 'high' | 'medium' | 'low'): JSX.Element => {
+  const variantMap = {
+    high: 'priority-high' as const,
+    medium: 'priority-medium' as const,
+    low: 'priority-low' as const,
+  };
+  
+  const labelMap = {
+    high: 'Alta',
+    medium: 'Média',
+    low: 'Baixa',
+  };
+
+  return (
+    <Badge variant={variantMap[priority]}>
+      {labelMap[priority]}
     </Badge>
   );
 };

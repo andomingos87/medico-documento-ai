@@ -20,6 +20,7 @@
     --primary: 150 47% 34%;
     --primary-foreground: 0 0% 98%;
     --primary-glow: 150 55% 45%;
+    --primary-highlight: 150 65% 40%;
 
     /* Secondary - Cinza neutro */
     --secondary: 210 10% 96%;
@@ -38,12 +39,32 @@
     --destructive-foreground: 0 0% 98%;
 
     /* Success - Verde confiança */
-    --success: 150 47% 34%;
+    --success: 150 60% 35%;
     --success-foreground: 0 0% 98%;
+    --success-highlight: 150 70% 40%;
 
     /* Warning - Amarelo-dourado claro #FFD700 */
-    --warning: 51 100% 50%;
+    --warning: 45 95% 55%;
     --warning-foreground: 0 0% 18%;
+    --warning-highlight: 45 100% 60%;
+
+    /* Info - Azul informativo */
+    --info: 210 75% 57%;
+    --info-foreground: 0 0% 98%;
+    --info-highlight: 210 85% 62%;
+
+    /* Danger - Vermelho crítico */
+    --danger: 5 75% 57%;
+    --danger-foreground: 0 0% 98%;
+    --danger-highlight: 5 85% 62%;
+
+    /* Priority colors */
+    --priority-high: 5 85% 60%;
+    --priority-high-foreground: 0 0% 98%;
+    --priority-medium: 45 95% 55%;
+    --priority-medium-foreground: 0 0% 18%;
+    --priority-low: 150 60% 35%;
+    --priority-low-foreground: 0 0% 98%;
 
     /* Borders and inputs */
     --border: 210 10% 92%;
@@ -88,6 +109,7 @@
     --primary: 150 47% 34%;
     --primary-foreground: 0 0% 98%;
     --primary-glow: 150 55% 45%;
+    --primary-highlight: 150 65% 40%;
 
     --secondary: 217 32% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -101,11 +123,28 @@
     --destructive: 5 75% 57%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 150 47% 34%;
+    --success: 150 60% 35%;
     --success-foreground: 0 0% 98%;
+    --success-highlight: 150 70% 40%;
 
-    --warning: 51 100% 50%;
+    --warning: 45 95% 55%;
     --warning-foreground: 0 0% 18%;
+    --warning-highlight: 45 100% 60%;
+
+    --info: 210 75% 57%;
+    --info-foreground: 0 0% 98%;
+    --info-highlight: 210 85% 62%;
+
+    --danger: 5 75% 57%;
+    --danger-foreground: 0 0% 98%;
+    --danger-highlight: 5 85% 62%;
+
+    --priority-high: 5 85% 60%;
+    --priority-high-foreground: 0 0% 98%;
+    --priority-medium: 45 95% 55%;
+    --priority-medium-foreground: 0 0% 18%;
+    --priority-low: 150 60% 35%;
+    --priority-low-foreground: 0 0% 98%;
 
     --border: 217 32% 17.5%;
     --input: 217 32% 17.5%;
