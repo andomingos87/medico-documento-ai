@@ -48,7 +48,7 @@ export const PatientCombobox: React.FC<PatientComboboxProps> = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={cn("w-full h-10 justify-between text-left font-normal", className)}
+            className={cn("w-full justify-between text-left font-normal", className)}
             disabled={disabled}
           >
             {selectedPatient ? (
