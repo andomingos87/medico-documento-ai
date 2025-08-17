@@ -15,6 +15,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
+import { PatientCombobox } from '@/components/patients/PatientCombobox';
 
 // Tipos de procedimentos disponíveis
 export const PROCEDURE_TYPES = [
@@ -28,6 +29,7 @@ export const PROCEDURE_TYPES = [
 ];
 
 export interface NewDocumentFormValues {
+  patientId: string;
   patientName: string;
   procedureType: string;
   appointmentDate: string;
@@ -47,6 +49,7 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
 }) => {
   const form = useForm<NewDocumentFormValues>({
     defaultValues: {
+      patientId: '',
       patientName: '',
       procedureType: '',
       appointmentDate: '',
@@ -59,12 +62,19 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="patientName"
+          name="patientId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome do Paciente</FormLabel>
+              <FormLabel>Paciente</FormLabel>
               <FormControl>
-                <Input placeholder="Nome completo do paciente" {...field} />
+                <PatientCombobox 
+                  value={field.value}
+                  onValueChange={(patientId, patientName) => {
+                    field.onChange(patientId);
+                    form.setValue('patientName', patientName);
+                  }}
+                  placeholder="Buscar paciente ou adicionar novo..."
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
