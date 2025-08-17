@@ -52,7 +52,7 @@ export const PatientDetailsView = ({ patient }: PatientDetailsViewProps) => {
             </div>
             <div>
               <p className="text-sm font-medium text-neutral-500">Data de Nascimento</p>
-              <p className="text-neutral-700">{formatDate(patient.birthDate)}</p>
+              <p className="text-neutral-700">{formatDate(patient.birth_date)}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-neutral-500">Email</p>
@@ -66,35 +66,43 @@ export const PatientDetailsView = ({ patient }: PatientDetailsViewProps) => {
         </CardContent>
       </Card>
       
-      {patient.address && (
+      {(patient.street || patient.city) && (
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">Endereço</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm font-medium text-neutral-500">Logradouro</p>
-                <p className="text-neutral-700">{patient.address.street}, {patient.address.number}</p>
-              </div>
-              {patient.address.complement && (
+              {patient.street && patient.number && (
                 <div>
-                  <p className="text-sm font-medium text-neutral-500">Complemento</p>
-                  <p className="text-neutral-700">{patient.address.complement}</p>
+                  <p className="text-sm font-medium text-neutral-500">Logradouro</p>
+                  <p className="text-neutral-700">{patient.street}, {patient.number}</p>
                 </div>
               )}
-              <div>
-                <p className="text-sm font-medium text-neutral-500">Bairro</p>
-                <p className="text-neutral-700">{patient.address.neighborhood}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-neutral-500">CEP</p>
-                <p className="text-neutral-700">{patient.address.zipCode}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-neutral-500">Cidade/Estado</p>
-                <p className="text-neutral-700">{patient.address.city}/{patient.address.state}</p>
-              </div>
+              {patient.complement && (
+                <div>
+                  <p className="text-sm font-medium text-neutral-500">Complemento</p>
+                  <p className="text-neutral-700">{patient.complement}</p>
+                </div>
+              )}
+              {patient.neighborhood && (
+                <div>
+                  <p className="text-sm font-medium text-neutral-500">Bairro</p>
+                  <p className="text-neutral-700">{patient.neighborhood}</p>
+                </div>
+              )}
+              {patient.zip_code && (
+                <div>
+                  <p className="text-sm font-medium text-neutral-500">CEP</p>
+                  <p className="text-neutral-700">{patient.zip_code}</p>
+                </div>
+              )}
+              {patient.city && (
+                <div>
+                  <p className="text-sm font-medium text-neutral-500">Cidade/Estado</p>
+                  <p className="text-neutral-700">{patient.city}{patient.state && `/${patient.state}`}</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -125,7 +133,7 @@ export const PatientDetailsView = ({ patient }: PatientDetailsViewProps) => {
                        doc.type === 'declaration' ? 'Declaração' : 
                        doc.type}
                     </TableCell>
-                    <TableCell>{formatDate(doc.createdAt)}</TableCell>
+                    <TableCell>{formatDate(doc.created_at)}</TableCell>
                     <TableCell>{getStatusBadge(doc.status)}</TableCell>
                   </TableRow>
                 ))}
@@ -145,11 +153,11 @@ export const PatientDetailsView = ({ patient }: PatientDetailsViewProps) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <p className="text-sm font-medium text-neutral-500">Data de Cadastro</p>
-              <p className="text-neutral-700">{formatDate(patient.createdAt)}</p>
+              <p className="text-neutral-700">{formatDate(patient.created_at)}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-neutral-500">Última Atualização</p>
-              <p className="text-neutral-700">{formatDate(patient.updatedAt)}</p>
+              <p className="text-neutral-700">{formatDate(patient.updated_at)}</p>
             </div>
           </div>
         </CardContent>

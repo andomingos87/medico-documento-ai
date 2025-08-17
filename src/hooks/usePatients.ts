@@ -1,125 +1,12 @@
 
-import { useState, useMemo } from 'react';
-import { Patient, FilterOptions } from '@/components/patients/types';
-
-// Mock data for patients
-const mockPatients: Patient[] = [
-  {
-    id: '1',
-    name: 'João Silva',
-    cpf: '123.456.789-00',
-    gender: 'male',
-    birthDate: '1985-04-12',
-    email: 'joao.silva@email.com',
-    phone: '(11) 98765-4321',
-    address: {
-      street: 'Rua das Flores',
-      number: '123',
-      neighborhood: 'Jardim Primavera',
-      city: 'São Paulo',
-      state: 'SP',
-      zipCode: '01234-567'
-    },
-    documents: [
-      { id: 'd1', title: 'Termo de Consentimento - Cirurgia', type: 'consent', status: 'signed', createdAt: '2025-03-15T10:30:00Z' },
-      { id: 'd2', title: 'Autorização de Tratamento', type: 'authorization', status: 'pending', createdAt: '2025-04-10T14:20:00Z' }
-    ],
-    createdAt: '2025-01-10T08:45:00Z',
-    updatedAt: '2025-04-10T15:30:00Z'
-  },
-  {
-    id: '2',
-    name: 'Maria Oliveira',
-    cpf: '987.654.321-00',
-    gender: 'female',
-    birthDate: '1990-08-25',
-    email: 'maria.oliveira@email.com',
-    phone: '(11) 91234-5678',
-    address: {
-      street: 'Avenida Paulista',
-      number: '1000',
-      complement: 'Apto 502',
-      neighborhood: 'Bela Vista',
-      city: 'São Paulo',
-      state: 'SP',
-      zipCode: '01310-100'
-    },
-    documents: [
-      { id: 'd3', title: 'Termo de Consentimento - Procedimento Estético', type: 'consent', status: 'signed', createdAt: '2025-02-20T09:15:00Z' },
-    ],
-    createdAt: '2025-01-15T10:20:00Z',
-    updatedAt: '2025-02-20T09:20:00Z'
-  },
-  {
-    id: '3',
-    name: 'Carlos Mendes',
-    cpf: '456.789.123-00',
-    gender: 'male',
-    birthDate: '1978-12-03',
-    email: 'carlos.mendes@email.com',
-    phone: '(11) 97890-1234',
-    address: {
-      street: 'Rua Augusta',
-      number: '567',
-      neighborhood: 'Consolação',
-      city: 'São Paulo',
-      state: 'SP',
-      zipCode: '01305-000'
-    },
-    documents: [],
-    createdAt: '2025-03-05T14:10:00Z',
-    updatedAt: '2025-03-05T14:10:00Z'
-  },
-  {
-    id: '4',
-    name: 'Ana Souza',
-    cpf: '345.678.912-00',
-    gender: 'female',
-    birthDate: '1995-06-17',
-    email: 'ana.souza@email.com',
-    phone: '(11) 96543-2109',
-    address: {
-      street: 'Rua Oscar Freire',
-      number: '789',
-      complement: 'Bloco B, Apto 101',
-      neighborhood: 'Jardins',
-      city: 'São Paulo',
-      state: 'SP',
-      zipCode: '01426-001'
-    },
-    documents: [
-      { id: 'd4', title: 'Termo de Consentimento - Exame', type: 'consent', status: 'expired', createdAt: '2025-01-05T11:45:00Z' },
-      { id: 'd5', title: 'Declaração de Acompanhamento', type: 'declaration', status: 'draft', createdAt: '2025-04-20T16:30:00Z' }
-    ],
-    createdAt: '2025-02-01T09:30:00Z',
-    updatedAt: '2025-04-20T16:35:00Z'
-  },
-  {
-    id: '5',
-    name: 'Roberto Almeida',
-    cpf: '234.567.891-00',
-    gender: 'male',
-    birthDate: '1982-09-30',
-    email: 'roberto.almeida@email.com',
-    phone: '(11) 95432-1098',
-    address: {
-      street: 'Alameda Santos',
-      number: '456',
-      neighborhood: 'Cerqueira César',
-      city: 'São Paulo',
-      state: 'SP',
-      zipCode: '01419-000'
-    },
-    documents: [
-      { id: 'd6', title: 'Autorização de Procedimento', type: 'authorization', status: 'signed', createdAt: '2025-03-25T13:20:00Z' },
-    ],
-    createdAt: '2025-02-10T11:15:00Z',
-    updatedAt: '2025-03-25T13:25:00Z'
-  }
-];
+import { useState, useEffect, useMemo } from 'react';
+import { Patient, FilterOptions, CreatePatientData, UpdatePatientData } from '@/components/patients/types';
+import { supabase } from '@/integrations/supabase/client';
 
 export const usePatients = () => {
-  const [patients] = useState<Patient[]>(mockPatients);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterOptions>({
     search: '',
     gender: 'all',
@@ -127,6 +14,72 @@ export const usePatients = () => {
     sortBy: 'name',
     sortDirection: 'asc'
   });
+
+  // Fetch patients from Supabase
+  const fetchPatients = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('patients')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPatients((data || []) as Patient[]);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+      console.error('Error fetching patients:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Create new patient
+  const createPatient = async (patientData: CreatePatientData) => {
+    const { data, error } = await supabase
+      .from('patients')
+      .insert([patientData])
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    setPatients(prev => [data as Patient, ...prev]);
+    return data;
+  };
+
+  // Update patient
+  const updatePatient = async (id: string, patientData: UpdatePatientData) => {
+    const { data, error } = await supabase
+      .from('patients')
+      .update(patientData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    setPatients(prev => prev.map(p => p.id === id ? data as Patient : p));
+    return data;
+  };
+
+  // Soft delete patient
+  const deletePatient = async (id: string) => {
+    const { error } = await supabase
+      .from('patients')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) throw error;
+    
+    setPatients(prev => prev.filter(p => p.id !== id));
+  };
+
+  useEffect(() => {
+    fetchPatients();
+  }, []);
 
   const filteredPatients = useMemo(() => {
     return patients
@@ -145,7 +98,7 @@ export const usePatients = () => {
         
         // Date range filter
         if (filters.dateRange && filters.dateRange.from) {
-          const patientDate = new Date(patient.createdAt);
+          const patientDate = new Date(patient.created_at);
           const fromDate = filters.dateRange.from;
           if (patientDate < fromDate) {
             return false;
@@ -153,7 +106,7 @@ export const usePatients = () => {
         }
         
         if (filters.dateRange && filters.dateRange.to) {
-          const patientDate = new Date(patient.createdAt);
+          const patientDate = new Date(patient.created_at);
           const toDate = filters.dateRange.to;
           if (patientDate > toDate) {
             return false;
@@ -168,8 +121,8 @@ export const usePatients = () => {
             ? a.name.localeCompare(b.name) 
             : b.name.localeCompare(a.name);
         } else {
-          const dateA = new Date(a[filters.sortBy]).getTime();
-          const dateB = new Date(b[filters.sortBy]).getTime();
+          const dateA = new Date(a[filters.sortBy === 'createdAt' ? 'created_at' : filters.sortBy === 'updatedAt' ? 'updated_at' : a.created_at]).getTime();
+          const dateB = new Date(b[filters.sortBy === 'createdAt' ? 'created_at' : filters.sortBy === 'updatedAt' ? 'updated_at' : b.created_at]).getTime();
           return filters.sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
         }
       });
@@ -187,6 +140,12 @@ export const usePatients = () => {
     patients: filteredPatients,
     filters,
     updateFilters,
-    getPatientById
+    getPatientById,
+    createPatient,
+    updatePatient,
+    deletePatient,
+    isLoading,
+    error,
+    refetch: fetchPatients
   };
 };
