@@ -6,7 +6,8 @@ import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { User, Stethoscope, Calendar, FileText, Sparkles } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Sparkles, User, Stethoscope, Calendar, FileText } from 'lucide-react';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { 
@@ -59,14 +60,14 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
   });
 
   return (
-    <Card className="border-0 shadow-none">
-      <CardContent className="p-0">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Seção Paciente */}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Card className="shadow-soft border-border/50">
+          <CardContent className="pt-6 space-y-6">
+            {/* Seção do Paciente */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <User className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <User className="h-4 w-4 text-primary" />
                 Informações do Paciente
               </div>
               <FormField
@@ -74,10 +75,7 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
                 name="patientId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-primary" />
-                      Paciente
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Paciente</FormLabel>
                     <FormControl>
                       <PatientCombobox 
                         value={field.value}
@@ -86,7 +84,6 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
                           form.setValue('patientName', patientName);
                         }}
                         placeholder="Buscar paciente ou adicionar novo..."
-                        className="h-10"
                       />
                     </FormControl>
                     <FormMessage />
@@ -95,28 +92,27 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
               />
             </div>
 
-            {/* Seção Procedimento */}
+            <Separator />
+
+            {/* Seção do Procedimento */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Stethoscope className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Stethoscope className="h-4 w-4 text-accent" />
                 Detalhes do Procedimento
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="procedureType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Stethoscope className="h-4 w-4 text-primary" />
-                        Tipo de Procedimento
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Tipo de Procedimento</FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="h-10">
+                          <SelectTrigger className="transition-smooth hover:shadow-soft">
                             <SelectValue placeholder="Selecione o procedimento" />
                           </SelectTrigger>
                         </FormControl>
@@ -138,12 +134,16 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
                   name="appointmentDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-primary" />
+                      <FormLabel className="text-sm font-medium flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-warning" />
                         Data da Consulta
                       </FormLabel>
                       <FormControl>
-                        <Input type="datetime-local" className="h-10" {...field} />
+                        <Input 
+                          type="datetime-local" 
+                          className="transition-smooth hover:shadow-soft focus:ring-2 focus:ring-primary/20" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -152,10 +152,12 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
               </div>
             </div>
 
-            {/* Seção Informações Adicionais */}
+            <Separator />
+
+            {/* Seção de Informações Adicionais */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <FileText className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <FileText className="h-4 w-4 text-info" />
                 Informações Complementares
               </div>
               <FormField
@@ -163,14 +165,11 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
                 name="additionalInfo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-primary" />
-                      Informações Adicionais (opcional)
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Observações (opcional)</FormLabel>
                     <FormControl>
                       <Textarea 
                         placeholder="Observações ou detalhes específicos sobre o paciente ou procedimento..." 
-                        className="resize-none min-h-[80px]" 
+                        className="resize-none min-h-[100px] transition-smooth hover:shadow-soft focus:ring-2 focus:ring-primary/20" 
                         {...field} 
                       />
                     </FormControl>
@@ -179,24 +178,29 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
                 )}
               />
             </div>
-            
-            <DialogFooter className="pt-4 border-t">
-              <Button type="button" variant="outline" onClick={onCancel} className="h-10">
-                Cancelar
-              </Button>
-              <PrimaryActionButton 
-                type="submit"
-                isLoading={isGenerating}
-                loadingText="Gerando..."
-                icon={<Sparkles className="h-4 w-4" />}
-                className="h-10"
-              >
-                Gerar com IA
-              </PrimaryActionButton>
-            </DialogFooter>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+        
+        <DialogFooter className="pt-4 gap-3">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onCancel}
+            className="transition-smooth hover:shadow-soft"
+          >
+            Cancelar
+          </Button>
+          <PrimaryActionButton 
+            type="submit"
+            isLoading={isGenerating}
+            loadingText="Gerando termo..."
+            icon={<Sparkles className="h-4 w-4" />}
+            className="shadow-soft hover:shadow-elegant transition-all duration-300"
+          >
+            Gerar com IA
+          </PrimaryActionButton>
+        </DialogFooter>
+      </form>
+    </Form>
   );
 };
