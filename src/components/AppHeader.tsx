@@ -84,7 +84,8 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
           <UpgradePlanButton />
           
           <Button 
-            className="bg-medico-600 hover:bg-medico-700 mr-2"
+            variant="highlight"
+            className="mr-2 shadow-glow"
             onClick={() => setIsNewDocumentDialogOpen(true)}
           >
             <FileText className="mr-2 h-4 w-4" />
@@ -100,7 +101,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="" alt="Foto do perfil" />
-                  <AvatarFallback className="bg-medico-100 text-medico-700">DR</AvatarFallback>
+                  <AvatarFallback className="bg-primary/10 text-primary">DR</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>

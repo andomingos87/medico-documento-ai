@@ -21,15 +21,15 @@ const SidebarLink = ({ to, icon: Icon, children, className, onClick }: SidebarLi
     <Link
       to={to}
       className={cn(
-        "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+        "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 relative",
         isActive 
-          ? "text-medico-700 bg-medico-50" 
-          : "text-neutral-700 hover:text-medico-700 hover:bg-neutral-50",
+          ? "text-primary bg-primary/10 border-l-4 border-primary shadow-soft" 
+          : "text-neutral-700 hover:text-primary-highlight hover:bg-primary/5 hover:scale-105",
         className
       )}
       onClick={onClick}
     >
-      <Icon size={18} className={cn(isActive ? "text-medico-600" : "text-neutral-500")} />
+      <Icon size={18} className={cn(isActive ? "text-primary" : "text-neutral-500 group-hover:text-primary-highlight")} />
       <span>{children}</span>
     </Link>
   );
@@ -61,8 +61,8 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
       >
         {/* Sidebar header */}
         <div className="h-16 flex items-center px-4 border-b border-neutral-200">
-          <div className="flex items-center gap-2 text-xl font-semibold text-medico-700">
-            <FileText size={24} className="text-medico-600" />
+          <div className="flex items-center gap-2 text-xl font-semibold text-primary">
+            <FileText size={24} className="text-primary" />
             <span>Smart Termos</span>
           </div>
           <Button 
@@ -96,9 +96,9 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
 
         {/* Sidebar footer */}
         <div className="p-4 border-t border-neutral-200">
-          <div className="bg-medico-50 text-medico-700 rounded-md p-3 text-xs">
+          <div className="bg-primary/10 text-primary rounded-md p-3 text-xs border border-primary/20">
             <p className="font-medium">Plano Pro</p>
-            <p className="text-medico-600 mt-1">200 docs/mês disponíveis</p>
+            <p className="text-primary/80 mt-1">200 docs/mês disponíveis</p>
           </div>
         </div>
       </aside>
