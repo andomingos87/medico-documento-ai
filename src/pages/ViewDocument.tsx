@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -168,10 +169,9 @@ export const ViewDocument = () => {
           {document.status !== 'assinado' && (
             <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-medico-600 hover:bg-medico-700">
-                  <PenTool className="mr-2 h-4 w-4" />
+                <PrimaryActionButton icon={<PenTool className="h-4 w-4" />}>
                   Assinar
-                </Button>
+                </PrimaryActionButton>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -190,13 +190,13 @@ export const ViewDocument = () => {
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsSignDialogOpen(false)}>Cancelar</Button>
-                  <Button 
-                    className="bg-medico-600 hover:bg-medico-700"
+                  <PrimaryActionButton 
                     onClick={handleSignDocument}
-                    disabled={isLoading}
+                    isLoading={isLoading}
+                    loadingText="Processando..."
                   >
-                    {isLoading ? 'Processando...' : 'Confirmar Assinatura'}
-                  </Button>
+                    Confirmar Assinatura
+                  </PrimaryActionButton>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

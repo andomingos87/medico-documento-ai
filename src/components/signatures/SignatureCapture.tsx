@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { CheckCircle, PenTool } from 'lucide-react';
 import { DialogFooter } from '@/components/ui/dialog';
 
@@ -47,23 +48,15 @@ export const SignatureCapture: React.FC<SignatureCaptureProps> = ({
         <Button variant="outline" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button 
-          className="bg-medico-600 hover:bg-medico-700" 
-          disabled={!signatureData || isSigning}
+        <PrimaryActionButton 
+          disabled={!signatureData}
+          isLoading={isSigning}
+          loadingText="Processando..."
           onClick={onSignDocument}
+          icon={<CheckCircle className="h-4 w-4" />}
         >
-          {isSigning ? (
-            <>
-              <div className="animate-spin mr-2 h-4 w-4 border-2 border-b-transparent border-white rounded-full" />
-              Processando...
-            </>
-          ) : (
-            <>
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Concluir Assinatura
-            </>
-          )}
-        </Button>
+          Concluir Assinatura
+        </PrimaryActionButton>
       </DialogFooter>
     </>
   );

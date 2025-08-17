@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -250,23 +251,15 @@ export const CreateDocument = () => {
                 />
               </div>
               
-              <Button
+              <PrimaryActionButton
                 type="submit"
-                className="w-full mt-2 bg-medico-600 hover:bg-medico-700"
-                disabled={isGenerating}
+                className="w-full mt-2"
+                isLoading={isGenerating}
+                loadingText="Gerando Termo..."
+                icon={<Sparkles className="h-4 w-4" />}
               >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Gerando Termo...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Gerar Termo com IA
-                  </>
-                )}
-              </Button>
+                Gerar Termo com IA
+              </PrimaryActionButton>
             </form>
           </CardContent>
         </Card>
@@ -292,20 +285,14 @@ export const CreateDocument = () => {
             >
               Limpar
             </Button>
-            <Button
-              className="bg-medico-600 hover:bg-medico-700"
-              disabled={!generatedContent || isSaving}
+            <PrimaryActionButton
+              disabled={!generatedContent}
+              isLoading={isSaving}
+              loadingText="Salvando..."
               onClick={handleSaveDocument}
             >
-              {isSaving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                "Salvar Termo"
-              )}
-            </Button>
+              Salvar Termo
+            </PrimaryActionButton>
           </CardFooter>
         </Card>
       </div>

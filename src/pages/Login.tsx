@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,7 +35,7 @@ export const Login = () => {
     <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="flex justify-center items-center gap-2 text-2xl font-bold text-medico-700 mb-2">
+          <div className="flex justify-center items-center gap-2 text-2xl font-bold text-primary mb-2">
             <FileText className="h-8 w-8" />
             <span>Smart Termos</span>
           </div>
@@ -60,7 +61,7 @@ export const Login = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Senha</Label>
-                <a href="#" className="text-xs text-medico-600 hover:text-medico-700">
+                <a href="#" className="text-xs text-primary hover:text-primary-highlight">
                   Esqueceu a senha?
                 </a>
               </div>
@@ -88,13 +89,14 @@ export const Login = () => {
               </label>
             </div>
             
-            <Button 
+            <PrimaryActionButton 
               type="submit" 
-              className="w-full bg-medico-600 hover:bg-medico-700"
-              disabled={isLoading}
+              className="w-full"
+              isLoading={isLoading}
+              loadingText="Entrando..."
             >
-              {isLoading ? "Entrando..." : "Entrar"}
-            </Button>
+              Entrar
+            </PrimaryActionButton>
             {error && (
               <div className="text-red-600 text-sm text-center mt-2">{error}</div>
             )}
@@ -104,7 +106,7 @@ export const Login = () => {
           <div className="mt-6 pt-6 border-t border-neutral-200 text-center">
             <p className="text-sm text-neutral-600">
               Não tem uma conta?{" "}
-              <Link to="/register" className="text-medico-600 hover:text-medico-700 font-medium">
+              <Link to="/register" className="text-primary hover:text-primary-highlight font-medium">
                 Cadastre-se
               </Link>
             </p>

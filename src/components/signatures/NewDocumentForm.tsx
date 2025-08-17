@@ -2,6 +2,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
+import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles } from 'lucide-react';
@@ -134,23 +135,14 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancelar
           </Button>
-          <Button 
-            type="submit" 
-            className="bg-medico-600 hover:bg-medico-700"
-            disabled={isGenerating}
+          <PrimaryActionButton 
+            type="submit"
+            isLoading={isGenerating}
+            loadingText="Gerando..."
+            icon={<Sparkles className="h-4 w-4" />}
           >
-            {isGenerating ? (
-              <>
-                <div className="animate-spin mr-2 h-4 w-4 border-2 border-b-transparent border-white rounded-full" />
-                Gerando...
-              </>
-            ) : (
-              <>
-                <Sparkles className="mr-2 h-4 w-4" />
-                Gerar com IA
-              </>
-            )}
-          </Button>
+            Gerar com IA
+          </PrimaryActionButton>
         </DialogFooter>
       </form>
     </Form>

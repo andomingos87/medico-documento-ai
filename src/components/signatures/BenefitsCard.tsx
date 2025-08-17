@@ -12,15 +12,15 @@ import {
 
 export const BenefitsCard = () => {
   return (
-    <Card className="lg:col-span-3 bg-gradient-to-br from-medico-50 to-blue-50 border-neutral-200">
+    <Card className="lg:col-span-3 bg-gradient-to-br from-primary/10 to-accent/10 border-neutral-200">
       <CardContent className="pt-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <BenefitItem
-            icon={<TabletSmartphone className="h-6 w-6 text-medico-600" />}
+            icon={<TabletSmartphone className="h-6 w-6 text-primary" />}
             title="Experiência Mobile"
             description="Interface otimizada para tablets, facilitando o uso em consultórios e clínicas"
-            bgColor="bg-medico-100"
-            textColor="text-medico-600"
+            bgColor="bg-primary/20"
+            textColor="text-primary"
           />
           
           <BenefitItem

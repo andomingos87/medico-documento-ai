@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -218,21 +219,14 @@ export const Settings = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button
+              <PrimaryActionButton
                 type="submit"
-                className="bg-medico-600 hover:bg-medico-700"
                 onClick={handleSubmit}
-                disabled={isLoading}
+                isLoading={isLoading}
+                loadingText="Salvando..."
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Salvando...
-                  </>
-                ) : (
-                  "Salvar Alterações"
-                )}
-              </Button>
+                Salvar Alterações
+              </PrimaryActionButton>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -333,21 +327,14 @@ export const Settings = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button
+              <PrimaryActionButton
                 type="submit"
-                className="bg-medico-600 hover:bg-medico-700"
                 onClick={handleSubmit}
-                disabled={isLoading}
+                isLoading={isLoading}
+                loadingText="Salvando..."
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Salvando...
-                  </>
-                ) : (
-                  "Salvar Preferências"
-                )}
-              </Button>
+                Salvar Preferências
+              </PrimaryActionButton>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -458,21 +445,14 @@ export const Settings = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button
+              <PrimaryActionButton
                 type="submit"
-                className="bg-medico-600 hover:bg-medico-700"
                 onClick={handleSubmit}
-                disabled={isLoading}
+                isLoading={isLoading}
+                loadingText="Salvando..."
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Salvando...
-                  </>
-                ) : (
-                  "Salvar Integrações"
-                )}
-              </Button>
+                Salvar Integrações
+              </PrimaryActionButton>
             </CardFooter>
           </Card>
         </TabsContent>

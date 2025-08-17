@@ -99,7 +99,7 @@ export const UpgradePlanButton = () => {
                   key={plan.name}
                   className={cn(
                     "border rounded-lg p-4", 
-                    plan.highlight ? "border-medico-400 bg-medico-50" : "border-neutral-200",
+                    plan.highlight ? "border-primary bg-primary/10" : "border-neutral-200",
                     plan.current ? "border-yellow-400 bg-yellow-50" : ""
                   )}
                 >
@@ -121,7 +121,7 @@ export const UpgradePlanButton = () => {
                   <ul className="space-y-2 mb-4">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="text-sm flex items-center gap-2">
-                        <div className="h-1.5 w-1.5 rounded-full bg-medico-600 shrink-0" />
+                        <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                         {feature}
                       </li>
                     ))}
@@ -175,7 +175,7 @@ export const UpgradePlanButton = () => {
                 key={plan.name}
                 className={cn(
                   "border rounded-lg p-4 flex flex-col", 
-                  plan.highlight ? "border-medico-400 bg-medico-50" : "border-neutral-200",
+                  plan.highlight ? "border-primary bg-primary/10" : "border-neutral-200",
                   plan.current ? "border-yellow-400 bg-yellow-50" : ""
                 )}
               >
@@ -197,7 +197,7 @@ export const UpgradePlanButton = () => {
                 <ul className="space-y-2 mb-4 flex-grow">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="text-sm flex items-center gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-medico-600 shrink-0" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                       {feature}
                     </li>
                   ))}

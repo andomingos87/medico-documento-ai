@@ -62,7 +62,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
         
         <div className="bg-neutral-50 px-6 py-4 flex items-center justify-end md:w-48">
           <Button 
-            className={document.status === 'pending' ? "bg-medico-600 hover:bg-medico-700 w-full" : "w-full"}
+            className="w-full"
             variant={document.status === 'pending' ? "default" : "outline"}
             onClick={() => onView(document)}
           >

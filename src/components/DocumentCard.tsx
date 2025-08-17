@@ -83,8 +83,8 @@ export const DocumentCard = ({
     <div className="bg-white rounded-lg border border-neutral-200 shadow-card p-4 flex flex-col">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-full bg-medico-50">
-            <FileText size={18} className="text-medico-600" />
+          <div className="p-2 rounded-full bg-primary/10">
+            <FileText size={18} className="text-primary" />
           </div>
           <div>
             <h3 className="font-medium text-neutral-900 line-clamp-1">{title}</h3>

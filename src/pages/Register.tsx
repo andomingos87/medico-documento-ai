@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FileText } from 'lucide-react';
@@ -33,7 +34,7 @@ export const Register = () => {
     <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="flex justify-center items-center gap-2 text-2xl font-bold text-medico-700 mb-2">
+          <div className="flex justify-center items-center gap-2 text-2xl font-bold text-primary mb-2">
             <FileText className="h-8 w-8" />
             <span>Smart Termos</span>
           </div>
@@ -64,16 +65,21 @@ export const Register = () => {
                 required
               />
             </div>
-            <Button type="submit" className="w-full bg-medico-600 hover:bg-medico-700" disabled={isLoading}>
-              {isLoading ? 'Cadastrando...' : 'Cadastrar'}
-            </Button>
+            <PrimaryActionButton 
+              type="submit" 
+              className="w-full"
+              isLoading={isLoading}
+              loadingText="Cadastrando..."
+            >
+              Cadastrar
+            </PrimaryActionButton>
             {error && <div className="text-red-600 text-sm text-center mt-2">{error}</div>}
             {success && <div className="text-green-600 text-sm text-center mt-2">{success}</div>}
           </form>
           <div className="mt-6 pt-6 border-t border-neutral-200 text-center">
             <p className="text-sm text-neutral-600">
               Já tem uma conta?{' '}
-              <Link to="/login" className="text-medico-600 hover:text-medico-700 font-medium">
+              <Link to="/login" className="text-primary hover:text-primary-highlight font-medium">
                 Entrar
               </Link>
             </p>

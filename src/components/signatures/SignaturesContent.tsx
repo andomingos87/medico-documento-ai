@@ -25,7 +25,7 @@ export const SignaturesContent: React.FC<SignaturesContentProps> = ({
         <TabsTrigger value="pending" className="relative">
           Pendentes
           {pendingDocuments.length > 0 && (
-            <span className="ml-1 rounded-full bg-medico-600 px-1.5 py-0.5 text-xs text-white">
+            <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-xs text-primary-foreground">
               {pendingDocuments.length}
             </span>
           )}
