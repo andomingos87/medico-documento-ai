@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
 export const Patients = () => {
-  const { patients, filters, updateFilters, isLoading, error } = usePatients();
+  const { patients, filters, updateFilters, createPatient, updatePatient, deletePatient, isLoading, error } = usePatients();
 
   return (
     <div className="space-y-6">
@@ -19,7 +19,7 @@ export const Patients = () => {
             Gerencie todos os pacientes e veja seus documentos associados
           </p>
         </div>
-        <NewPatientDialog />
+        <NewPatientDialog onCreatePatient={createPatient} />
       </div>
 
       {error && (
@@ -37,7 +37,12 @@ export const Patients = () => {
         totalResults={patients.length}
       />
       
-      <PatientsList patients={patients} isLoading={isLoading} />
+      <PatientsList 
+        patients={patients} 
+        isLoading={isLoading} 
+        onUpdatePatient={updatePatient}
+        onDeletePatient={deletePatient}
+      />
     </div>
   );
 };

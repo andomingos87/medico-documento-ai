@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { PatientForm } from './PatientForm';
-import { usePatients } from '@/hooks/usePatients';
 import { useToast } from '@/hooks/use-toast';
-import { Patient } from './types';
+import { Patient, UpdatePatientData } from './types';
 import { Button } from '@/components/ui/button';
 import { Edit } from 'lucide-react';
 
 interface EditPatientDialogProps {
   patient: Patient;
   trigger?: React.ReactNode;
+  onUpdatePatient: (id: string, data: UpdatePatientData) => Promise<any>;
 }
 
-export const EditPatientDialog = ({ patient, trigger }: EditPatientDialogProps) => {
+export const EditPatientDialog = ({ patient, trigger, onUpdatePatient }: EditPatientDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { updatePatient } = usePatients();
   const { toast } = useToast();
 
   const handleSubmit = async (data: any) => {
     try {
       setIsLoading(true);
-      await updatePatient(patient.id, {
+      await onUpdatePatient(patient.id, {
         name: data.name,
         cpf: data.cpf,
         gender: data.gender,

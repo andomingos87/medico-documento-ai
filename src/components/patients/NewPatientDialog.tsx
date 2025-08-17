@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { PatientForm } from './PatientForm';
-import { usePatients } from '@/hooks/usePatients';
 import { useToast } from '@/hooks/use-toast';
 import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { UserPlus } from 'lucide-react';
+import { CreatePatientData } from './types';
 
 interface NewPatientDialogProps {
   trigger?: React.ReactNode;
+  onCreatePatient: (data: CreatePatientData) => Promise<any>;
 }
 
-export const NewPatientDialog = ({ trigger }: NewPatientDialogProps) => {
+export const NewPatientDialog = ({ trigger, onCreatePatient }: NewPatientDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { createPatient } = usePatients();
   const { toast } = useToast();
 
   const handleSubmit = async (data: any) => {
     try {
       setIsLoading(true);
-      await createPatient({
+      await onCreatePatient({
         name: data.name,
         cpf: data.cpf,
         gender: data.gender,

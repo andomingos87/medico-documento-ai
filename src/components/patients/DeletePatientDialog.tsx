@@ -11,7 +11,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { usePatients } from '@/hooks/usePatients';
 import { useToast } from '@/hooks/use-toast';
 import { Patient } from './types';
 import { Trash2 } from 'lucide-react';
@@ -19,18 +18,18 @@ import { Trash2 } from 'lucide-react';
 interface DeletePatientDialogProps {
   patient: Patient;
   trigger?: React.ReactNode;
+  onDeletePatient: (id: string) => Promise<void>;
 }
 
-export const DeletePatientDialog = ({ patient, trigger }: DeletePatientDialogProps) => {
+export const DeletePatientDialog = ({ patient, trigger, onDeletePatient }: DeletePatientDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { deletePatient } = usePatients();
   const { toast } = useToast();
 
   const handleDelete = async () => {
     try {
       setIsLoading(true);
-      await deletePatient(patient.id);
+      await onDeletePatient(patient.id);
       
       toast({
         title: 'Sucesso',

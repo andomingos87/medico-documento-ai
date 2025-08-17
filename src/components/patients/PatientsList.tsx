@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Patient } from './types';
+import { Patient, UpdatePatientData } from './types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatDate } from '@/lib/formatDate';
@@ -13,9 +13,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 interface PatientsListProps {
   patients: Patient[];
   isLoading?: boolean;
+  onUpdatePatient: (id: string, data: UpdatePatientData) => Promise<any>;
+  onDeletePatient: (id: string) => Promise<void>;
 }
 
-export const PatientsList = ({ patients, isLoading }: PatientsListProps) => {
+export const PatientsList = ({ patients, isLoading, onUpdatePatient, onDeletePatient }: PatientsListProps) => {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   const handleViewDetails = (patient: Patient) => {
@@ -67,8 +69,8 @@ export const PatientsList = ({ patients, isLoading }: PatientsListProps) => {
                       >
                         Ver detalhes
                       </Button>
-                      <EditPatientDialog patient={patient} />
-                      <DeletePatientDialog patient={patient} />
+                      <EditPatientDialog patient={patient} onUpdatePatient={onUpdatePatient} />
+                      <DeletePatientDialog patient={patient} onDeletePatient={onDeletePatient} />
                     </TableCell>
                   </TableRow>
                 ))
