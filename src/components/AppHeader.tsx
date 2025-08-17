@@ -89,7 +89,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
             onClick={() => setIsNewDocumentDialogOpen(true)}
           >
             <FileText className="mr-2 h-4 w-4" />
-            Novo Termo de Consentimento
+            Novo Termo
           </Button>
           
           <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-neutral-700">
