@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, ChevronsUpDown, Plus, Search } from 'lucide-react';
+import { Check, ChevronDown, Plus, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -48,7 +48,7 @@ export const PatientCombobox: React.FC<PatientComboboxProps> = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between text-left font-normal"
+            className={cn("w-full h-10 justify-between text-left font-normal", className)}
             disabled={disabled}
           >
             {selectedPatient ? (
@@ -56,16 +56,16 @@ export const PatientCombobox: React.FC<PatientComboboxProps> = ({
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
             )}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0" align="start">
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
           <Command>
             <div className="flex items-center border-b px-3">
               <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
               <CommandInput 
                 placeholder="Buscar por nome, CPF ou email..." 
-                className="border-0 bg-transparent py-3 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:ring-0"
+                className="border-0 bg-transparent py-2 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:ring-0"
               />
             </div>
             <CommandList>
@@ -85,10 +85,10 @@ export const PatientCombobox: React.FC<PatientComboboxProps> = ({
               </CommandEmpty>
               
               <CommandGroup>
-                <div className="p-2 border-b">
+                <div className="p-1 border-b">
                   <NewPatientDialog 
                     trigger={
-                      <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <Button variant="ghost" size="sm" className="w-full justify-start h-8">
                         <Plus className="mr-2 h-4 w-4" />
                         Adicionar novo paciente
                       </Button>
