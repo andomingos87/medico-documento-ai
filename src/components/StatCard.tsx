@@ -26,13 +26,7 @@ export const StatCard = ({
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <h3 className="text-3xl font-bold mt-2 text-card-foreground">{value}</h3>
           
-          {trend && (
-            <div className="flex items-center gap-1 mt-1">
-              <span className={`text-xs font-medium ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                {trend.isPositive ? '↗' : '↘'} {trend.value}%
-              </span>
-            </div>
-          )}
+          {trend}
           
           {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
         </div>
