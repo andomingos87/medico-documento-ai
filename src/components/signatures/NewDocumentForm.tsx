@@ -2,6 +2,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
+import { SecondaryActionButton } from '@/components/ui/secondary-action-button';
 import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -144,9 +145,9 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
         />
         
         <DialogFooter className="pt-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <SecondaryActionButton type="button" onClick={onCancel}>
             Cancelar
-          </Button>
+          </SecondaryActionButton>
           <PrimaryActionButton 
             type="submit"
             isLoading={isGenerating}

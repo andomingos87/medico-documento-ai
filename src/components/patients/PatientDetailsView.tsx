@@ -27,6 +27,45 @@ export const PatientDetailsView = ({ patient }: PatientDetailsViewProps) => {
     }
   };
 
+  const educationLabel = (value?: Patient['education_level']) => {
+    switch (value) {
+      case 'high_school':
+        return 'Ensino médio';
+      case 'undergraduate':
+        return 'Superior';
+      case 'postgraduate':
+        return 'Pós-graduação';
+      default:
+        return 'Não informado';
+    }
+  };
+
+  const comprehensionLabel = (value?: Patient['comprehension_level']) => {
+    switch (value) {
+      case 'basic':
+        return 'Básico';
+      case 'intermediate':
+        return 'Intermediário';
+      case 'advanced':
+        return 'Avançado';
+      default:
+        return 'Não informado';
+    }
+  };
+
+  const comprehensionBadgeClass = (value?: Patient['comprehension_level']) => {
+    switch (value) {
+      case 'basic':
+        return 'bg-yellow-50 text-yellow-700 border-yellow-300';
+      case 'intermediate':
+        return 'bg-blue-50 text-blue-700 border-blue-300';
+      case 'advanced':
+        return 'bg-green-50 text-green-700 border-green-300';
+      default:
+        return 'bg-neutral-50 text-neutral-700 border-neutral-300';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -61,6 +100,32 @@ export const PatientDetailsView = ({ patient }: PatientDetailsViewProps) => {
             <div>
               <p className="text-sm font-medium text-neutral-500">Telefone</p>
               <p className="text-neutral-700">{patient.phone}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Educação e Compreensão</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-medium text-neutral-500">Nível de educação</p>
+              <div className="mt-1">
+                <Badge variant="outline" className="bg-neutral-50 text-neutral-700 border-neutral-300">
+                  {educationLabel(patient.education_level)}
+                </Badge>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-neutral-500">Nível de compreensão</p>
+              <div className="mt-1">
+                <Badge variant="outline" className={comprehensionBadgeClass(patient.comprehension_level)}>
+                  {comprehensionLabel(patient.comprehension_level)}
+                </Badge>
+              </div>
             </div>
           </div>
         </CardContent>

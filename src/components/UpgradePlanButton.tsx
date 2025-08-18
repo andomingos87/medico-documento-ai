@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { SecondaryActionButton } from '@/components/ui/secondary-action-button';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -138,9 +139,9 @@ export const UpgradePlanButton = () => {
               ))}
             </div>
             <DrawerFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <SecondaryActionButton onClick={() => setIsDialogOpen(false)}>
                 Cancelar
-              </Button>
+              </SecondaryActionButton>
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
@@ -215,9 +216,9 @@ export const UpgradePlanButton = () => {
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <SecondaryActionButton onClick={() => setIsDialogOpen(false)}>
               Cancelar
-            </Button>
+            </SecondaryActionButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

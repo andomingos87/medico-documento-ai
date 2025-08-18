@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { SecondaryActionButton } from '@/components/ui/secondary-action-button';
 import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { CheckCircle, PenTool } from 'lucide-react';
 import { DialogFooter } from '@/components/ui/dialog';
@@ -45,9 +46,9 @@ export const SignatureCapture: React.FC<SignatureCaptureProps> = ({
       </div>
       
       <DialogFooter className="mt-4">
-        <Button variant="outline" onClick={onCancel}>
+        <SecondaryActionButton onClick={onCancel}>
           Cancelar
-        </Button>
+        </SecondaryActionButton>
         <PrimaryActionButton 
           disabled={!signatureData}
           isLoading={isSigning}

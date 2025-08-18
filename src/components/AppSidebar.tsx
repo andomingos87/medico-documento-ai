@@ -80,14 +80,14 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
           <SidebarLink to="/dashboard" icon={Home}>
             Dashboard
           </SidebarLink>
+          <SidebarLink to="/pacientes" icon={Users}>
+            Pacientes
+          </SidebarLink>
           <SidebarLink to="/documentos" icon={FileText}>
             Documentos
           </SidebarLink>
           <SidebarLink to="/assinaturas" icon={FileSignature}>
             Assinaturas
-          </SidebarLink>
-          <SidebarLink to="/pacientes" icon={Users}>
-            Pacientes
           </SidebarLink>
           <SidebarLink to="/configuracoes" icon={Settings}>
             Configurações

@@ -14,6 +14,8 @@ export interface Patient {
   city?: string;
   state?: string;
   zip_code?: string;
+  education_level?: 'high_school' | 'undergraduate' | 'postgraduate';
+  comprehension_level?: 'basic' | 'intermediate' | 'advanced';
   documents?: PatientDocument[];
   created_at: string;
   updated_at: string;
@@ -41,6 +43,8 @@ export interface CreatePatientData {
   city?: string | null;
   state?: string | null;
   zip_code?: string | null;
+  education_level?: 'high_school' | 'undergraduate' | 'postgraduate' | null;
+  comprehension_level?: 'basic' | 'intermediate' | 'advanced' | null;
 }
 
 export interface UpdatePatientData extends Partial<CreatePatientData> {}

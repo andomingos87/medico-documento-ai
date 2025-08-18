@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PrimaryActionButton } from '@/components/ui/primary-action-button';
+import { SecondaryActionButton } from '@/components/ui/secondary-action-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
@@ -58,14 +59,13 @@ export const ForgotPasswordDialog = ({ open, onOpenChange }: ForgotPasswordDialo
             />
           </div>
           <div className="flex gap-3 pt-2">
-            <Button 
+            <SecondaryActionButton 
               type="button" 
-              variant="outline" 
               onClick={() => onOpenChange(false)}
               className="flex-1"
             >
               Cancelar
-            </Button>
+            </SecondaryActionButton>
             <PrimaryActionButton
               type="submit"
               className="flex-1"

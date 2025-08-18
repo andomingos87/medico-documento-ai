@@ -33,6 +33,8 @@ export const NewPatientDialog = ({ trigger, onCreatePatient }: NewPatientDialogP
         city: data.city || null,
         state: data.state || null,
         zip_code: data.zipCode || null,
+        education_level: data.educationLevel || null,
+        comprehension_level: data.comprehensionLevel || null,
       });
       
       toast({

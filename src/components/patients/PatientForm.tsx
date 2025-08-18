@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Button } from '@/components/ui/button';
+import { SecondaryActionButton } from '@/components/ui/secondary-action-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -26,6 +26,8 @@ const patientSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   zipCode: z.string().optional(),
+  educationLevel: z.enum(['high_school', 'undergraduate', 'postgraduate']).optional(),
+  comprehensionLevel: z.enum(['basic', 'intermediate', 'advanced']).optional(),
 });
 
 type PatientFormData = z.infer<typeof patientSchema>;
@@ -54,6 +56,8 @@ export const PatientForm = ({ patient, onSubmit, onCancel, isLoading }: PatientF
       city: patient?.city || '',
       state: patient?.state || '',
       zipCode: patient?.zip_code || '',
+      educationLevel: patient?.education_level || undefined,
+      comprehensionLevel: patient?.comprehension_level || undefined,
     },
   });
 
@@ -79,6 +83,7 @@ export const PatientForm = ({ patient, onSubmit, onCancel, isLoading }: PatientF
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
           <FormField
             control={form.control}
             name="name"
@@ -182,6 +187,52 @@ export const PatientForm = ({ patient, onSubmit, onCancel, isLoading }: PatientF
                     }}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="educationLevel"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nível de educação</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o nível de educação" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="high_school">Ensino médio</SelectItem>
+                    <SelectItem value="undergraduate">Superior</SelectItem>
+                    <SelectItem value="postgraduate">Pós-graduação</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="comprehensionLevel"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nível de compreensão</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o nível de compreensão" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="basic">Básico</SelectItem>
+                    <SelectItem value="intermediate">Intermediário</SelectItem>
+                    <SelectItem value="advanced">Avançado</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -300,14 +351,13 @@ export const PatientForm = ({ patient, onSubmit, onCancel, isLoading }: PatientF
         </div>
 
         <div className="flex justify-end space-x-3">
-          <Button 
-            type="button" 
-            variant="outline" 
+          <SecondaryActionButton
+            type="button"
             onClick={onCancel}
             disabled={isLoading}
           >
             Cancelar
-          </Button>
+          </SecondaryActionButton>
           <PrimaryActionButton type="submit" isLoading={isLoading}>
             {patient ? 'Atualizar' : 'Salvar'} Paciente
           </PrimaryActionButton>

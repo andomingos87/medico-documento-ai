@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { SecondaryActionButton } from '@/components/ui/secondary-action-button';
 import { PrimaryActionButton } from '@/components/ui/primary-action-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -189,7 +190,7 @@ export const ViewDocument = () => {
                   </p>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsSignDialogOpen(false)}>Cancelar</Button>
+                  <SecondaryActionButton onClick={() => setIsSignDialogOpen(false)}>Cancelar</SecondaryActionButton>
                   <PrimaryActionButton 
                     onClick={handleSignDocument}
                     isLoading={isLoading}
