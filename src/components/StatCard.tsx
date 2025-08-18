@@ -29,7 +29,7 @@ export const StatCard = ({
           {trend && (
             <div className="flex items-center gap-1 mt-1">
               <span className={`text-sm font-medium ${trend.isPositive ? 'text-primary' : 'text-destructive'}`}>
-                {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+                {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}
               </span>
             </div>
           )}
