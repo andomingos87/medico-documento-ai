@@ -139,6 +139,7 @@ export const useAnamneses = () => {
     setIsDeleteOpen,
     // actions
     createItem: (v: NewAnamnesisValues) => createMutation.mutate(v),
+    createItemAsync: (v: NewAnamnesisValues) => createMutation.mutateAsync(v),
     updateItem: (id: string, v: NewAnamnesisValues) => updateMutation.mutate({ id, data: v }),
     deleteItem: (id: string) => deleteMutation.mutate(id),
     sendLink: (id: string) => sendLinkMutation.mutate(id),

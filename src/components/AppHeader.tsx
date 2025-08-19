@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,9 +12,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Bell, Menu, User, LogOut, Settings, FileText, Star } from 'lucide-react';
-import { NewDocumentDialog } from '@/components/signatures/NewDocumentDialog';
+import { Bell, Menu, User, LogOut, Settings, Stethoscope, Star } from 'lucide-react';
+import { NewAnamnesisDialog } from '@/components/anamneses/NewAnamnesisDialog';
 import { cn } from '@/lib/utils';
+import { useAnamneses } from '@/hooks/useAnamneses';
 import { UpgradePlanButton } from '@/components/UpgradePlanButton';
 
 // Helper to get the title based on current route
@@ -42,8 +42,9 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const title = getRouteTitle(location.pathname);
-  const [isNewDocumentDialogOpen, setIsNewDocumentDialogOpen] = useState(false);
+  const [isNewAnamnesisDialogOpen, setIsNewAnamnesisDialogOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { createItemAsync } = useAnamneses();
 
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
   const userEmail = user?.email || '';
@@ -74,10 +75,10 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
           <Button 
             variant="highlight"
             className="mr-2 shadow-glow"
-            onClick={() => setIsNewDocumentDialogOpen(true)}
+            onClick={() => setIsNewAnamnesisDialogOpen(true)}
           >
-            <FileText className="mr-2 h-4 w-4" />
-            Novo Termo
+            <Stethoscope className="mr-2 h-4 w-4" />
+            Nova Anamnese
           </Button>
           
           <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
@@ -97,11 +98,11 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-  {userName ? userName : userEmail}
-</p>
-<p className="text-xs leading-none text-muted-foreground">
-  {userEmail}
-</p>
+                    {userName ? userName : userEmail}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {userEmail}
+                  </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -126,13 +127,18 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
         </div>
       </div>
 
-      <NewDocumentDialog
-        isOpen={isNewDocumentDialogOpen}
-        onOpenChange={setIsNewDocumentDialogOpen}
-        onSubmit={(values) => {
-          // This will be handled by the useDocuments hook in the Signatures page
+      <NewAnamnesisDialog
+        open={isNewAnamnesisDialogOpen}
+        onOpenChange={setIsNewAnamnesisDialogOpen}
+        onSubmit={async (values) => {
+          try {
+            await createItemAsync(values);
+            setIsNewAnamnesisDialogOpen(false);
+            navigate('/anamneses');
+          } catch (e) {
+            // erros já são tratados pelo hook via toast
+          }
         }}
-        isGenerating={false}
       />
     </header>
   );
