@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { listDocuments, deleteDocument, DocumentStatus, DocumentRow } from '@/integrations/supabase/documents';
+import { listDocuments, deleteDocument, DocumentStatus, DocumentRow, ComprehensionLevel, DeliveryChannel } from '@/integrations/supabase/documents';
 
 export type StatusFilter = 'all' | DocumentStatus;
+export type ComprehensionFilter = 'all' | ComprehensionLevel;
+export type ChannelFilter = 'all' | DeliveryChannel;
 
 export function usePaginatedDocuments(initialPageSize = 12) {
   const [items, setItems] = useState<DocumentRow[]>([]);
@@ -10,6 +12,11 @@ export function usePaginatedDocuments(initialPageSize = 12) {
   const [pageSize] = useState(initialPageSize);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<StatusFilter>('all');
+  const [procedureId, setProcedureId] = useState<string | 'all'>('all');
+  const [patientId, setPatientId] = useState<string | 'all'>('all');
+  const [comprehension, setComprehension] = useState<ComprehensionFilter>('all');
+  const [channel, setChannel] = useState<ChannelFilter>('all');
+  const [expiresUntil, setExpiresUntil] = useState<string | null>(null); // YYYY-MM-DD
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +29,17 @@ export function usePaginatedDocuments(initialPageSize = 12) {
       try {
         setLoading(true);
         setError(null);
-        const { items, total } = await listDocuments({ search, status, page, pageSize });
+        const { items, total } = await listDocuments({
+          search,
+          status,
+          page,
+          pageSize,
+          procedureId,
+          patientId,
+          comprehension,
+          channel,
+          expiresUntil,
+        });
         if (!cancelled) {
           setItems(items);
           setTotal(total);
@@ -40,7 +57,7 @@ export function usePaginatedDocuments(initialPageSize = 12) {
       controller.abort();
       clearTimeout(handle);
     };
-  }, [search, status, page, pageSize]);
+  }, [search, status, page, pageSize, procedureId, patientId, comprehension, channel, expiresUntil]);
 
   const refetch = () => {
     // força re-execução alterando page para ela mesma
@@ -65,9 +82,21 @@ export function usePaginatedDocuments(initialPageSize = 12) {
     setSearch,
     status,
     setStatus,
+    procedureId,
+    setProcedureId,
+    patientId,
+    setPatientId,
+    comprehension,
+    setComprehension,
+    channel,
+    setChannel,
+    expiresUntil,
+    setExpiresUntil,
     loading,
     error,
     refetch,
     remove,
+    setItems,
+    setTotal,
   };
 }

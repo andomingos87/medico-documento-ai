@@ -27,6 +27,10 @@ const getRouteTitle = (pathname: string) => {
       return 'Documentos';
     case '/assinaturas':
       return 'Assinaturas';
+    case '/profissionais':
+      return 'Profissionais';
+    case '/tarefas':
+      return 'Tarefas';
     case '/configuracoes':
       return 'Configurações';
     default:

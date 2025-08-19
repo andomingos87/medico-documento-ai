@@ -86,6 +86,12 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
           <SidebarLink to="/procedimentos" icon={ListChecks}>
             Procedimentos
           </SidebarLink>
+          <SidebarLink to="/profissionais" icon={Users}>
+            Profissionais
+          </SidebarLink>
+          <SidebarLink to="/tarefas" icon={ListChecks}>
+            Tarefas
+          </SidebarLink>
           <SidebarLink to="/anamneses" icon={Stethoscope}>
             Anamneses
           </SidebarLink>

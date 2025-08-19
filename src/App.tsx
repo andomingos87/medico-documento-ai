@@ -16,6 +16,8 @@ import { Settings } from "./pages/Settings";
 import { Procedures } from "./pages/Procedures";
 import { Anamneses } from "./pages/Anamneses";
 import { Patients } from "./pages/Patients";
+import { Professionals } from "./pages/Professionals";
+import { Tasks } from "./pages/Tasks";
 import { Register } from "./pages/Register";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -49,6 +51,8 @@ const App = () => (
                 <Route path="/assinaturas" element={<Signatures />} />
                 <Route path="/pacientes" element={<Patients />} />
                 <Route path="/procedimentos" element={<Procedures />} />
+                <Route path="/tarefas" element={<Tasks />} />
+                <Route path="/profissionais" element={<Professionals />} />
                 <Route path="/anamneses" element={<Anamneses />} />
                 <Route path="/configuracoes" element={<Settings />} />
               </Route>
