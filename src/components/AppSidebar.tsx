@@ -98,9 +98,9 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
           <SidebarLink to="/documentos" icon={FileText}>
             Termos
           </SidebarLink>
-          <SidebarLink to="/assinaturas" icon={FileSignature}>
+          {/* <SidebarLink to="/assinaturas" icon={FileSignature}>
             Assinaturas
-          </SidebarLink>
+          </SidebarLink> */}
           <SidebarLink to="/configuracoes" icon={Settings}>
             Configurações
           </SidebarLink>
