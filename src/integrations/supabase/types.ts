@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      procedures: {
+        Row: {
+          id: string
+          name: string
+          category: string
+          description: string
+          risks: string
+          contraindications: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          category: string
+          description?: string
+          risks?: string
+          contraindications?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          category?: string
+          description?: string
+          risks?: string
+          contraindications?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
       patients: {
         Row: {
           birth_date: string

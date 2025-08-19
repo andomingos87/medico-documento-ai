@@ -12,6 +12,7 @@ import { DocumentsList } from "./pages/DocumentsList";
 import { ViewDocument } from "./pages/ViewDocument";
 import { Signatures } from "./pages/Signatures";
 import { Settings } from "./pages/Settings";
+import { Procedures } from "./pages/Procedures";
 import { Patients } from "./pages/Patients";
 import { Register } from "./pages/Register";
 import Index from "./pages/Index";
@@ -44,6 +45,7 @@ const App = () => (
                 <Route path="/criar-documento" element={<Navigate to="/documentos" replace />} />
                 <Route path="/assinaturas" element={<Signatures />} />
                 <Route path="/pacientes" element={<Patients />} />
+                <Route path="/procedimentos" element={<Procedures />} />
                 <Route path="/configuracoes" element={<Settings />} />
               </Route>
               {/* Página inicial com redirecionamento inteligente */}

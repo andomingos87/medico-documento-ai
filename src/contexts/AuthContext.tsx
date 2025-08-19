@@ -41,12 +41,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setLoading(false);
 
         // Handle auth events
-        if (event === 'SIGNED_IN') {
-          toast({
-            title: "Login realizado com sucesso",
-            description: "Bem-vindo de volta!",
-          });
-        } else if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT') {
           toast({
             title: "Logout realizado",
             description: "Você foi desconectado com sucesso.",
@@ -95,6 +90,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           title: "Erro no login",
           description: getErrorMessage(error),
           variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login realizado com sucesso",
+          description: "Bem-vindo de volta!",
         });
       }
       

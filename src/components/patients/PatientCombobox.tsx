@@ -44,12 +44,17 @@ export const PatientCombobox: React.FC<PatientComboboxProps> = ({
     <div className={cn("w-full", className)}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
+          <button
+            type="button"
             role="combobox"
             aria-expanded={open}
-            className={cn("w-full justify-between text-left font-normal", className)}
             disabled={disabled}
+            className={cn(
+              "flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+              "placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+              "disabled:cursor-not-allowed disabled:opacity-50 text-left font-normal",
+              className
+            )}
           >
             {selectedPatient ? (
               <span className="truncate">{formatPatientDisplay(selectedPatient)}</span>
@@ -57,11 +62,14 @@ export const PatientCombobox: React.FC<PatientComboboxProps> = ({
               <span className="text-muted-foreground">{placeholder}</span>
             )}
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
+          </button>
         </PopoverTrigger>
-        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-0 rounded-md border border-input bg-popover text-popover-foreground shadow-md"
+          align="start"
+        >
           <Command>
-            <div className="flex items-center border-b px-3">
+            <div className="flex items-center border-b border-border px-3">
               <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
               <CommandInput 
                 placeholder="Buscar por nome, CPF ou email..." 
@@ -105,12 +113,12 @@ export const PatientCombobox: React.FC<PatientComboboxProps> = ({
                       onValueChange(patient.id, patient.name);
                       setOpen(false);
                     }}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-primary/10 hover:text-primary focus:bg-primary/10 focus:text-primary data-[highlighted]:bg-primary/10 data-[highlighted]:text-primary data-[selected=true]:bg-primary/10 data-[selected=true]:text-primary"
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        selectedPatient?.id === patient.id ? "opacity-100" : "opacity-0"
+                        selectedPatient?.id === patient.id ? "opacity-100 text-primary" : "opacity-0"
                       )}
                     />
                     <div className="flex-1 min-w-0">

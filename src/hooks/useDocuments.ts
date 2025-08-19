@@ -9,7 +9,7 @@ import {
   SIGNED_DOCUMENTS 
 } from '@/components/signatures/types';
 import { generateConsentText } from '@/components/signatures/ConsentTextGenerator';
-import { NewDocumentFormValues, PROCEDURE_TYPES } from '@/components/signatures/NewDocumentForm';
+import { NewDocumentFormValues } from '@/components/signatures/NewDocumentForm';
 
 export const useDocuments = () => {
   const [documents, setDocuments] = useState<ConsentDocument[]>([...PENDING_DOCUMENTS, ...SIGNED_DOCUMENTS]);
@@ -52,7 +52,7 @@ export const useDocuments = () => {
       const newDocument: PendingConsentDocument = {
         id: `doc${documents.length + 1}`,
         patientName: values.patientName,
-        procedureType: PROCEDURE_TYPES.find(p => p.id === values.procedureType)?.name || values.procedureType,
+        procedureType: values.procedureType,
         appointmentDate: values.appointmentDate,
         readingTime: Math.floor(Math.random() * 5) + 3, // 3-7 minutes
         createdAt: new Date().toISOString(),

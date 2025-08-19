@@ -16,18 +16,11 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
+import { useQuery } from '@tanstack/react-query';
+import { listProcedures } from '@/integrations/supabase/procedures';
 import { PatientCombobox } from '@/components/patients/PatientCombobox';
 
-// Tipos de procedimentos disponíveis
-export const PROCEDURE_TYPES = [
-  { id: 'botox', name: 'Toxina Botulínica (Botox)' },
-  { id: 'filling', name: 'Preenchimento Facial' },
-  { id: 'threads', name: 'Fios de Sustentação' },
-  { id: 'peel', name: 'Peeling Químico' },
-  { id: 'laser', name: 'Tratamento a Laser' },
-  { id: 'lip', name: 'Preenchimento Labial' },
-  { id: 'bioestimulator', name: 'Bioestimulador de Colágeno' },
-];
+// Procedimentos virão do banco (Supabase)
 
 export interface NewDocumentFormValues {
   patientId: string;
@@ -58,14 +51,21 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
     },
   });
 
+  // Carrega procedimentos do Supabase para o Select
+  const { data: procedures = [], isLoading: isLoadingProcedures } = useQuery({
+    queryKey: ['procedures', { search: '', category: 'Todos' }],
+    queryFn: () => listProcedures({}),
+  });
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
           control={form.control}
           name="patientId"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="md:col-span-2">
               <FormLabel>Paciente</FormLabel>
               <FormControl>
                 <PatientCombobox 
@@ -81,8 +81,6 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
             </FormItem>
           )}
         />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="procedureType"
@@ -95,13 +93,13 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o procedimento" />
+                      <SelectValue placeholder={isLoadingProcedures ? 'Carregando...' : 'Selecione o procedimento'} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {PROCEDURE_TYPES.map((procedure) => (
-                      <SelectItem key={procedure.id} value={procedure.id}>
-                        {procedure.name}
+                    {procedures.map((p) => (
+                      <SelectItem key={p.id} value={p.name}>
+                        {p.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -124,13 +122,12 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
               </FormItem>
             )}
           />
-        </div>
-
+        
         <FormField
           control={form.control}
           name="additionalInfo"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="md:col-span-2">
               <FormLabel>Informações Adicionais (opcional)</FormLabel>
               <FormControl>
                 <Textarea 
@@ -143,6 +140,7 @@ export const NewDocumentForm: React.FC<NewDocumentFormProps> = ({
             </FormItem>
           )}
         />
+        </div>
         
         <DialogFooter className="pt-4">
           <SecondaryActionButton type="button" onClick={onCancel}>
