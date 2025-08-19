@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      anamneses: {
+        Row: {
+          id: string
+          patient_id: string
+          patient_name: string
+          procedure_id: string
+          procedure_name: string
+          created_at: string
+          status: 'draft' | 'link_sent' | 'completed'
+          medical_history: Json
+          aesthetics_history: Json
+          expectations: string
+          awareness: string
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          patient_name: string
+          procedure_id: string
+          procedure_name: string
+          created_at?: string
+          status?: 'draft' | 'link_sent' | 'completed'
+          medical_history: Json
+          aesthetics_history: Json
+          expectations: string
+          awareness: string
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          patient_name?: string
+          procedure_id?: string
+          procedure_name?: string
+          created_at?: string
+          status?: 'draft' | 'link_sent' | 'completed'
+          medical_history?: Json
+          aesthetics_history?: Json
+          expectations?: string
+          awareness?: string
+        }
+        Relationships: []
+      },
       procedures: {
         Row: {
           id: string

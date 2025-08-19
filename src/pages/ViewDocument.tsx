@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { SecondaryActionButton } from '@/components/ui/secondary-action-button';
@@ -34,6 +34,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { getDocument } from '@/integrations/supabase/documents';
 
 // Tipos para o documento
 type DocumentStatus = 'rascunho' | 'pendente' | 'assinado';
@@ -53,36 +54,39 @@ export const ViewDocument = () => {
   const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingDoc, setIsLoadingDoc] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   
-  // Dados fictícios do documento
-  const [document, setDocument] = useState<DocumentData>({
-    id: id || '1',
-    title: 'Atestado Médico - João Silva',
-    content: `
-      <div>
-        <h2 style="text-align: center; margin-bottom: 20px;">ATESTADO MÉDICO</h2>
-        
-        <p style="margin-bottom: 15px;">Atesto para os devidos fins que o(a) paciente <strong>João Silva</strong>, 
-        portador(a) do CPF 123.456.789-00, foi atendido(a) nesta data, necessitando de 
-        afastamento de suas atividades por 3 (três) dias a partir de 15/04/2025.</p>
-        
-        <p style="margin-bottom: 15px;">CID-10: J11 (Influenza devido a vírus não identificado)</p>
-        
-        <div style="margin-top: 40px; text-align: center;">
-          <p>São Paulo, 15 de Abril de 2025</p>
-          <div style="margin-top: 40px; border-top: 1px solid #000; width: 200px; margin-left: auto; margin-right: auto; padding-top: 5px;">
-            Dr. Ricardo Silva<br>
-            CRM/SP 123456<br>
-            Clínica Médica
-          </div>
-        </div>
-      </div>
-    `,
-    status: 'pendente',
-    createdAt: '2025-04-15T10:30:00',
-    documentType: 'Atestado Médico',
-    patient: 'João Silva'
-  });
+  const [document, setDocument] = useState<DocumentData | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      if (!id) return;
+      try {
+        setIsLoadingDoc(true);
+        setLoadError(null);
+        const data = await getDocument(id);
+        // Adaptar do formato do banco para o formato local de exibição
+        const mapped: DocumentData = {
+          id: data.id,
+          title: data.title,
+          content: `<div><h2 style="text-align:center;margin-bottom:20px;">${data.document_type}</h2><p style="margin-bottom: 15px;">Visualização do termo.</p></div>`,
+          status: data.status as DocumentStatus,
+          createdAt: data.created_at,
+          documentType: data.document_type,
+          patient: data.patient ?? undefined,
+        };
+        if (!cancelled) setDocument(mapped);
+      } catch (e: any) {
+        if (!cancelled) setLoadError(e?.message ?? 'Erro ao carregar documento');
+      } finally {
+        if (!cancelled) setIsLoadingDoc(false);
+      }
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [id]);
 
   // Função para assinar o documento
   const handleSignDocument = () => {
@@ -146,14 +150,14 @@ export const ViewDocument = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">{document.title}</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">{document?.title ?? 'Carregando...'}</h1>
           <div className="flex items-center gap-2 mt-2">
-            {renderStatusBadge(document.status)}
+            {document && renderStatusBadge(document.status)}
             <span className="text-sm text-neutral-500 flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              {new Date(document.createdAt).toLocaleDateString('pt-BR')}
+              {document ? new Date(document.createdAt).toLocaleDateString('pt-BR') : '--/--/----'}
             </span>
-            {document.patient && (
+            {document?.patient && (
               <span className="text-sm text-neutral-500 flex items-center gap-1">
                 <User className="h-3 w-3" />
                 {document.patient}
@@ -161,20 +165,20 @@ export const ViewDocument = () => {
             )}
             <span className="text-sm text-neutral-500 flex items-center gap-1">
               <Tag className="h-3 w-3" />
-              {document.documentType}
+              {document?.documentType ?? '--'}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {document.status !== 'assinado' && (
+          {document && document.status !== 'assinado' && (
             <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
               <DialogTrigger asChild>
                 <PrimaryActionButton icon={<PenTool className="h-4 w-4" />}>
                   Assinar
                 </PrimaryActionButton>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Assinar Documento</DialogTitle>
                   <DialogDescription>
@@ -262,79 +266,6 @@ export const ViewDocument = () => {
           </DropdownMenu>
         </div>
       </div>
-
-      <Tabs defaultValue="preview">
-        <TabsList className="mb-4">
-          <TabsTrigger value="preview">Visualizar</TabsTrigger>
-          <TabsTrigger value="info">Informações</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="preview">
-          <Card>
-            <CardContent className="p-6">
-              <div 
-                className="document-content"
-                dangerouslySetInnerHTML={{ __html: document.content }}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="info">
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="text-sm font-medium text-neutral-500">Título</h3>
-                    <p className="mt-1">{document.title}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-neutral-500">Tipo de Documento</h3>
-                    <p className="mt-1">{document.documentType}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-neutral-500">Status</h3>
-                    <div className="mt-1">{renderStatusBadge(document.status)}</div>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-neutral-500">Data de Criação</h3>
-                    <p className="mt-1">{new Date(document.createdAt).toLocaleDateString('pt-BR')}</p>
-                  </div>
-                  {document.patient && (
-                    <div>
-                      <h3 className="text-sm font-medium text-neutral-500">Paciente</h3>
-                      <p className="mt-1">{document.patient}</p>
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <h3 className="text-sm font-medium text-neutral-500 mb-2">Histórico de Alterações</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex">
-                      <div className="w-4 h-4 rounded-full bg-neutral-200 mt-1 mr-2 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium">Documento criado</p>
-                        <p className="text-neutral-500">15/04/2025 às 10:30 - Dr. Ricardo Silva</p>
-                      </div>
-                    </div>
-                    {document.status === 'assinado' && (
-                      <div className="flex">
-                        <div className="w-4 h-4 rounded-full bg-green-200 mt-1 mr-2 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium">Documento assinado</p>
-                          <p className="text-neutral-500">15/04/2025 às 14:45 - Dr. Ricardo Silva</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };
