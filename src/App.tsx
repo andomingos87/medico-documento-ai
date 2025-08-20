@@ -23,6 +23,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { Profile } from "./pages/Profile";
+import { Appointments } from "./pages/Appointments";
 
 const queryClient = new QueryClient();
 
@@ -53,7 +55,9 @@ const App = () => (
                 <Route path="/procedimentos" element={<Procedures />} />
                 <Route path="/tarefas" element={<Tasks />} />
                 <Route path="/profissionais" element={<Professionals />} />
+                <Route path="/perfil" element={<Profile />} />
                 <Route path="/anamneses" element={<Anamneses />} />
+                <Route path="/agendamentos" element={<Appointments />} />
                 <Route path="/configuracoes" element={<Settings />} />
               </Route>
               {/* Página inicial com redirecionamento inteligente */}

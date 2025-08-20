@@ -16,87 +16,177 @@ export type Database = {
     Tables: {
       anamneses: {
         Row: {
+          aesthetics_history: Json
+          awareness: string
+          created_at: string
+          expectations: string
           id: string
+          medical_history: Json
           patient_id: string
           patient_name: string
           procedure_id: string
           procedure_name: string
-          created_at: string
-          status: 'draft' | 'link_sent' | 'completed'
-          medical_history: Json
-          aesthetics_history: Json
-          expectations: string
-          awareness: string
+          status: string
         }
         Insert: {
+          aesthetics_history?: Json
+          awareness?: string
+          created_at?: string
+          expectations?: string
           id?: string
+          medical_history?: Json
           patient_id: string
           patient_name: string
           procedure_id: string
           procedure_name: string
-          created_at?: string
-          status?: 'draft' | 'link_sent' | 'completed'
-          medical_history: Json
-          aesthetics_history: Json
-          expectations: string
-          awareness: string
+          status?: string
         }
         Update: {
+          aesthetics_history?: Json
+          awareness?: string
+          created_at?: string
+          expectations?: string
           id?: string
+          medical_history?: Json
           patient_id?: string
           patient_name?: string
           procedure_id?: string
           procedure_name?: string
-          created_at?: string
-          status?: 'draft' | 'link_sent' | 'completed'
-          medical_history?: Json
-          aesthetics_history?: Json
-          expectations?: string
-          awareness?: string
+          status?: string
         }
         Relationships: []
-      },
-      procedures: {
+      }
+      appointments: {
         Row: {
-          id: string
-          name: string
-          category: string
-          description: string
-          risks: string
-          contraindications: string
           created_at: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          patient_id: string
+          procedure_id: string | null
+          professional_id: string | null
+          scheduled_at: string
+          status: string
           updated_at: string
         }
         Insert: {
-          id?: string
-          name: string
-          category: string
-          description?: string
-          risks?: string
-          contraindications?: string
           created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          patient_id: string
+          procedure_id?: string | null
+          professional_id?: string | null
+          scheduled_at: string
+          status?: string
           updated_at?: string
         }
         Update: {
-          id?: string
-          name?: string
-          category?: string
-          description?: string
-          risks?: string
-          contraindications?: string
           created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          procedure_id?: string | null
+          professional_id?: string | null
+          scheduled_at?: string
+          status?: string
           updated_at?: string
         }
-        Relationships: []
-      },
+        Relationships: [
+          {
+            foreignKeyName: "appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "procedures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          comprehension_level: string | null
+          created_at: string
+          delivery_channel: string | null
+          document_type: string
+          expires_at: string | null
+          id: string
+          patient: string | null
+          patient_id: string | null
+          procedure_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          comprehension_level?: string | null
+          created_at?: string
+          delivery_channel?: string | null
+          document_type: string
+          expires_at?: string | null
+          id?: string
+          patient?: string | null
+          patient_id?: string | null
+          procedure_id?: string | null
+          status: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          comprehension_level?: string | null
+          created_at?: string
+          delivery_channel?: string | null
+          document_type?: string
+          expires_at?: string | null
+          id?: string
+          patient?: string | null
+          patient_id?: string | null
+          procedure_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "procedures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patients: {
         Row: {
           birth_date: string
           city: string | null
           complement: string | null
+          comprehension_level: string | null
           cpf: string
           created_at: string
           deleted_at: string | null
+          education_level: string | null
           email: string
           gender: string
           id: string
@@ -113,9 +203,11 @@ export type Database = {
           birth_date: string
           city?: string | null
           complement?: string | null
+          comprehension_level?: string | null
           cpf: string
           created_at?: string
           deleted_at?: string | null
+          education_level?: string | null
           email: string
           gender: string
           id?: string
@@ -132,9 +224,11 @@ export type Database = {
           birth_date?: string
           city?: string | null
           complement?: string | null
+          comprehension_level?: string | null
           cpf?: string
           created_at?: string
           deleted_at?: string | null
+          education_level?: string | null
           email?: string
           gender?: string
           id?: string
@@ -149,12 +243,76 @@ export type Database = {
         }
         Relationships: []
       }
+      procedures: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          risks: string
+          updated_at: string
+          contraindications: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          risks?: string
+          updated_at?: string
+          contraindications?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          risks?: string
+          updated_at?: string
+          contraindications?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      gtrgm_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: { "": unknown }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      set_limit: {
+        Args: { "": number }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: { "": string }
+        Returns: string[]
+      }
     }
     Enums: {
       [_ in never]: never

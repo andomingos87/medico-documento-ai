@@ -1,3 +1,5 @@
+/* Estilos base do react-day-picker */
+@import "react-day-picker/dist/style.css";
 
 @tailwind base;
 @tailwind components;
@@ -215,5 +217,11 @@
 
   .shadow-soft {
     box-shadow: var(--shadow-soft);
+  }
+
+  /* Destaque do dia atual no react-day-picker */
+  .rdp-day_today {
+    border: 2px solid hsl(var(--accent));
+    font-weight: 600;
   }
 }

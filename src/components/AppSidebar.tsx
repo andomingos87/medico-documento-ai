@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { FileText, Home, Settings, Menu, FileSignature, Users, ListChecks, Stethoscope } from 'lucide-react';
+import { FileText, Home, Settings, Menu, FileSignature, Users, ListChecks, Stethoscope, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type SidebarLinkProps = {
@@ -80,6 +79,9 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
           <SidebarLink to="/dashboard" icon={Home}>
             Dashboard
           </SidebarLink>
+          <SidebarLink to="/agendamentos" icon={CalendarDays}>
+            Agendamentos
+          </SidebarLink>
           <SidebarLink to="/pacientes" icon={Users}>
             Pacientes
           </SidebarLink>
@@ -101,9 +103,9 @@ export const AppSidebar = ({ isSidebarOpen, toggleSidebar }: AppSidebarProps) =>
           {/* <SidebarLink to="/assinaturas" icon={FileSignature}>
             Assinaturas
           </SidebarLink> */}
-          <SidebarLink to="/configuracoes" icon={Settings}>
+          {/* <SidebarLink to="/configuracoes" icon={Settings}>
             Configurações
-          </SidebarLink>
+          </SidebarLink> */}
         </div>
 
         {/* Sidebar footer */}

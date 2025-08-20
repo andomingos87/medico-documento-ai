@@ -31,6 +31,8 @@ const getRouteTitle = (pathname: string) => {
       return 'Profissionais';
     case '/tarefas':
       return 'Tarefas';
+    case '/perfil':
+      return 'Meu Perfil';
     case '/configuracoes':
       return 'Configurações';
     default:
@@ -110,7 +112,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/perfil')}>
                 <User className="mr-2 h-4 w-4" />
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
