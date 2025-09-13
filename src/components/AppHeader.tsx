@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Bell, Menu, User, LogOut, Settings, Stethoscope, Star } from 'lucide-react';
+import { Bell, Menu, User, LogOut, Stethoscope, Star } from 'lucide-react';
 import { NewAnamnesisDialog } from '@/components/anamneses/NewAnamnesisDialog';
 import { cn } from '@/lib/utils';
 import { useAnamneses } from '@/hooks/useAnamneses';
@@ -87,9 +87,9 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
             Nova Anamnese
           </Button>
           
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+          {/* <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
             <Bell size={18} />
-          </Button>
+          </Button> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -116,10 +116,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
                 <User className="mr-2 h-4 w-4" />
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Configurações</span>
-              </DropdownMenuItem>
+              {/** Item de Configurações removido por decisão de manter apenas a página Perfil */}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive cursor-pointer"

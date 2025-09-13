@@ -36,9 +36,9 @@ export async function listAppointments(params: ListAppointmentsParams = {}): Pro
     .from('appointments')
     .select(`
       id, patient_id, professional_id, procedure_id, scheduled_at, duration_minutes, status, notes, created_at, updated_at,
-      patient:patients!appointments_patient_id_fkey(id,name),
-      professional:professionals!appointments_professional_id_fkey(id,name),
-      procedure:procedures!appointments_procedure_id_fkey(id,name)
+      patient:patients(id,name),
+      professional:professionals(id,name),
+      procedure:procedures(id,name)
     `)
     .order('scheduled_at', { ascending: true })
     .range(offset, offset + limit - 1);

@@ -2,11 +2,36 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://grzkmetsgooretttrjiv.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyemttZXRzZ29vcmV0dHRyaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0NTI5NjQsImV4cCI6MjA3MTAyODk2NH0.O3X90dhlJAxH1W8Bw8jV9jFZjR_zRCjPBsgQI8DcvjE";
+const projectRef: string | undefined = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+const providedUrl: string | undefined = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_URL = providedUrl || (projectRef ? `https://${projectRef}.supabase.co` : undefined);
+const SUPABASE_PUBLISHABLE_KEY: string | undefined = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  // Fail fast with a clear error instead of using hardcoded fallbacks
+  const missing = [
+    !SUPABASE_URL ? 'VITE_SUPABASE_URL ou VITE_SUPABASE_PROJECT_ID' : undefined,
+    !SUPABASE_PUBLISHABLE_KEY ? 'VITE_SUPABASE_PUBLISHABLE_KEY' : undefined,
+  ].filter(Boolean).join(', ');
+  // eslint-disable-next-line no-console
+  console.error('[Supabase] Variáveis ausentes:', missing);
+  throw new Error(`[Supabase] Configure as variáveis de ambiente: ${missing}`);
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
+
+// Pequena verificação para ajudar a diagnosticar DNS incorreto (ex.: domínio do projeto inválido)
+try {
+  const url = new URL(SUPABASE_URL);
+  if (!url.hostname.endsWith('.supabase.co')) {
+    // eslint-disable-next-line no-console
+    console.warn('[Supabase] A URL não parece ser do domínio supabase.co:', SUPABASE_URL);
+  }
+} catch (_) {
+  // eslint-disable-next-line no-console
+  console.warn('[Supabase] URL inválida fornecida:', SUPABASE_URL);
+}
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {

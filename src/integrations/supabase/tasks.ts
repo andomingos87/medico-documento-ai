@@ -27,7 +27,7 @@ export async function listTasks(params: ListTasksParams = {}): Promise<Task[]> {
   const { search, priority, status, assigneeId } = params;
   let query = (supabase as any)
     .from('tasks')
-    .select('id,title,description,priority,status,assignee_id,due_date,created_at,updated_at, assignee:professionals!tasks_assignee_id_fkey(id,name)')
+    .select('id,title,description,priority,status,assignee_id,due_date,created_at,updated_at, assignee:professionals(id,name)')
     .order('created_at', { ascending: false });
 
   if (search && search.trim()) {
