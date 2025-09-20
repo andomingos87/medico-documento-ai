@@ -9,9 +9,8 @@ import { useAppointments } from "@/hooks/useAppointments";
 import { listProfessionals, type ProfessionalRow } from "@/integrations/supabase/professionals";
 import { NewAppointmentDialog } from "@/components/appointments/NewAppointmentDialog";
 import { EditAppointmentDialog } from "@/components/appointments/EditAppointmentDialog";
-import { DayPicker } from "react-day-picker";
-import { startOfDay, endOfDay, isSameDay } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import Calendar from "react-calendar";
+import { isSameDay } from "date-fns";
 import { toast } from "@/hooks/use-toast";
 
 export const Appointments = () => {
@@ -53,22 +52,7 @@ export const Appointments = () => {
   }, [items]);
 
   // Componente customizado para o conteúdo do dia (adiciona um ponto quando há agendamentos)
-  const DayContent = React.useCallback((props: any) => {
-    const date: Date = props.date;
-    const key = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
-    const count = daysWithItems.get(key) || 0;
-    return (
-      <div className="relative flex items-center justify-center">
-        <span>{date.getDate()}</span>
-        {count > 0 && (
-          <span
-            title={`${count} agendamento(s)`}
-            className="absolute -bottom-1 h-1.5 w-1.5 rounded-full bg-primary"
-          />
-        )}
-      </div>
-    );
-  }, [daysWithItems]);
+  // Indicador de dias com agendamentos será renderizado via tileContent do react-calendar
 
   const dayStatusSummary = React.useMemo(() => {
     const sum = { agendado: 0, confirmado: 0, cancelado: 0, concluido: 0 } as Record<string, number>;
@@ -207,28 +191,31 @@ export const Appointments = () => {
         <TabsContent value="calendario" className="mt-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="border rounded-md p-4">
-              <DayPicker
-                mode="single"
-                selected={selectedDate}
-                onSelect={(day) => {
+              <Calendar
+                locale="pt-BR"
+                calendarType="iso8601"
+                value={selectedDate ?? null}
+                onChange={(nextValue: Date | Date[]) => {
+                  const day = Array.isArray(nextValue) ? nextValue[0] : nextValue;
                   setSelectedDate(day ?? undefined);
                   if (day) {
-                    updateFilters({ from: startOfDay(day), to: endOfDay(day) });
+                    updateFilters({ dateRange: { from: day, to: day } });
                   } else {
-                    updateFilters({ from: undefined, to: undefined });
+                    updateFilters({ dateRange: undefined });
                   }
                 }}
-                locale={ptBR}
-                weekStartsOn={1}
-                showOutsideDays
-                fixedWeeks
-                captionLayout="dropdown-buttons"
-                components={{ DayContent }}
-                className="rdp-custom"
-                styles={{
-                  caption: { paddingBottom: 8 },
-                  day: { height: 36, width: 36, margin: 2 },
-                  month: { padding: 8 },
+                showFixedNumberOfWeeks
+                showNeighboringMonth
+                tileContent={({ date, view }) => {
+                  if (view !== 'month') return null;
+                  const key = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+                  const count = daysWithItems.get(key) || 0;
+                  return count > 0 ? (
+                    <span
+                      title={`${count} agendamento(s)`}
+                      className="mt-1 block h-1.5 w-1.5 rounded-full bg-primary mx-auto"
+                    />
+                  ) : null;
                 }}
               />
               <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">

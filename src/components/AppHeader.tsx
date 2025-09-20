@@ -61,7 +61,7 @@ export const AppHeader = ({ toggleSidebar }: AppHeaderProps) => {
   };
 
   return (
-    <header className="h-16 bg-background border-b border-border sticky top-0 z-10">
+    <header className="h-16 bg-background border-b border-border sticky top-0 z-20">
       <div className="h-full px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button 

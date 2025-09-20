@@ -1,5 +1,20 @@
 import { supabase } from './client';
 
+// Mapeamento de status entre UI (pt-BR) e DB (en)
+const statusMapUIToDB: Record<string, string> = {
+  agendado: 'scheduled',
+  confirmado: 'confirmed',
+  cancelado: 'cancelled',
+  concluido: 'completed',
+};
+
+const statusMapDBToUI: Record<string, 'agendado' | 'confirmado' | 'cancelado' | 'concluido'> = {
+  scheduled: 'agendado',
+  confirmed: 'confirmado',
+  cancelled: 'cancelado',
+  completed: 'concluido',
+};
+
 export type AppointmentStatus = 'agendado' | 'confirmado' | 'cancelado' | 'concluido';
 
 export type Appointment = {
@@ -50,7 +65,8 @@ export async function listAppointments(params: ListAppointmentsParams = {}): Pro
     );
   }
   if (status && status !== 'todos') {
-    query = query.eq('status', status);
+    const dbStatus = (statusMapUIToDB as any)[status] || status;
+    query = query.eq('status', dbStatus);
   }
   if (professionalId && professionalId !== 'todos') {
     query = query.eq('professional_id', professionalId);
@@ -64,7 +80,12 @@ export async function listAppointments(params: ListAppointmentsParams = {}): Pro
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data as any) as Appointment[];
+  // Converte status do DB (en) para UI (pt-BR)
+  const normalized = (data as any[]).map((row) => ({
+    ...row,
+    status: (statusMapDBToUI as any)[row.status] || row.status,
+  }));
+  return normalized as unknown as Appointment[];
 }
 
 export type NewAppointment = {
@@ -78,7 +99,37 @@ export type NewAppointment = {
 };
 
 export async function createAppointment(values: NewAppointment): Promise<Appointment> {
-  const payload = { duration_minutes: 60, status: 'agendado', notes: null, ...values };
+  // Deriva appointment_date (YYYY-MM-DD) a partir de scheduled_at
+  const appointmentDate = values.scheduled_at
+    ? (() => {
+        const d = new Date(values.scheduled_at);
+        // Usa componentes locais para manter a data do usuário
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      })()
+    : undefined;
+  // Deriva appointment_time (HH:MM:SS) a partir de scheduled_at
+  const appointmentTime = values.scheduled_at
+    ? (() => {
+        const d = new Date(values.scheduled_at);
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mm = String(d.getMinutes()).padStart(2, '0');
+        const ss = String(d.getSeconds()).padStart(2, '0');
+        return `${hh}:${mm}:${ss}`;
+      })()
+    : undefined;
+
+  const payload: any = {
+    duration_minutes: 60,
+    notes: null,
+    ...values,
+    // Usa default do DB ('scheduled') se não vier status; caso venha, converte p/ DB
+    ...(values.status ? { status: (statusMapUIToDB as any)[values.status] || values.status } : {}),
+    ...(appointmentDate ? { appointment_date: appointmentDate } : {}),
+    ...(appointmentTime ? { appointment_time: appointmentTime } : {}),
+  };
   const { data, error } = await (supabase as any)
     .from('appointments')
     .insert(payload)
@@ -87,20 +138,42 @@ export async function createAppointment(values: NewAppointment): Promise<Appoint
     `)
     .single();
   if (error) throw error;
-  return data as Appointment;
+  // Normaliza status ao formato UI
+  const normalized = { ...data, status: (statusMapDBToUI as any)[(data as any).status] || (data as any).status };
+  return normalized as Appointment;
 }
 
 export type UpdateAppointment = Partial<NewAppointment>;
 
 export async function updateAppointment(id: string, values: UpdateAppointment): Promise<Appointment> {
+  // Se scheduled_at for atualizado, mantém appointment_date em sincronia
+  const patch: any = { ...values };
+  // Converte status para DB, se presente
+  if (values.status) {
+    patch.status = (statusMapUIToDB as any)[values.status] || values.status;
+  }
+  if (values.scheduled_at) {
+    const d = new Date(values.scheduled_at);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    patch.appointment_date = `${y}-${m}-${day}`;
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    patch.appointment_time = `${hh}:${mm}:${ss}`;
+  }
+
   const { data, error } = await (supabase as any)
     .from('appointments')
-    .update(values)
+    .update(patch)
     .eq('id', id)
     .select('*')
     .single();
   if (error) throw error;
-  return data as Appointment;
+  // Normaliza status ao formato UI
+  const normalized = { ...data, status: (statusMapDBToUI as any)[(data as any).status] || (data as any).status };
+  return normalized as Appointment;
 }
 
 export async function deleteAppointment(id: string): Promise<void> {

@@ -29,13 +29,13 @@ export const NewAppointmentDialog: React.FC<Props> = ({ open, onOpenChange, onSu
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!patientId || !scheduledAt) return;
+    if (!patientId || !scheduledAt || !procedureId) return;
     try {
       setSubmitting(true);
       await onSubmit({
         patient_id: patientId,
         professional_id: professionalId || null,
-        procedure_id: procedureId || null,
+        procedure_id: procedureId,
         scheduled_at: new Date(scheduledAt).toISOString(),
         duration_minutes: duration,
         status,
@@ -127,7 +127,7 @@ export const NewAppointmentDialog: React.FC<Props> = ({ open, onOpenChange, onSu
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={!patientId || !scheduledAt || submitting}>
+            <Button type="submit" disabled={!patientId || !scheduledAt || !procedureId || submitting}>
               Salvar
             </Button>
           </div>

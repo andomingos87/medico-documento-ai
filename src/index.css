@@ -1,6 +1,9 @@
 /* Estilos base do react-day-picker */
 @import "react-day-picker/dist/style.css";
 
+ /* Estilos base do react-calendar */
+ @import "react-calendar/dist/Calendar.css";
+ 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -198,7 +201,10 @@
   }
 
   .hover-glow {
-    @apply transition-all duration-300 hover:shadow-[var(--shadow-glow)];
+    transition: var(--transition-smooth);
+  }
+  .hover-glow:hover {
+    box-shadow: var(--shadow-glow);
   }
 
   /* Gradient utilities */
