@@ -11,6 +11,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  resendConfirmation: (email: string) => Promise<{ error: AuthError | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -115,10 +116,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signUp = async (email: string, password: string) => {
     try {
       setLoading(true);
+      const redirectUrl = `${window.location.origin}/dashboard`;
       
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/confirm-email`
+        }
       });
       
       if (error) {
@@ -127,27 +132,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           description: getErrorMessage(error),
           variant: "destructive",
         });
-        return { error };
-      }
-
-      // Check if user was created and session is available (no email confirmation required)
-      if (data.user && data.session) {
-        // User is automatically logged in
-        setUser(data.user);
-        setSession(data.session);
-        toast({
-          title: "Cadastro realizado com sucesso!",
-          description: "Bem-vindo ao Smart Termos!",
-        });
-        return { error: null };
       } else {
-        // Fallback case (shouldn't happen with email confirmation disabled)
         toast({
           title: "Cadastro realizado!",
-          description: "Sua conta foi criada com sucesso.",
+          description: "Verifique seu email para confirmar sua conta.",
         });
-        return { error: null };
       }
+      
+      return { error };
     } catch (error) {
       const authError = error as AuthError;
       toast({
@@ -217,6 +209,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const resendConfirmation = async (email: string) => {
+    try {
+      const redirectUrl = `${window.location.origin}/confirm-email`;
+      
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: redirectUrl
+        }
+      });
+      
+      if (error) {
+        toast({
+          title: "Erro ao reenviar email",
+          description: getErrorMessage(error),
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Email reenviado!",
+          description: "Verifique sua caixa de entrada para confirmar sua conta.",
+        });
+      }
+      
+      return { error };
+    } catch (error) {
+      const authError = error as AuthError;
+      toast({
+        title: "Erro ao reenviar email",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+      return { error: authError };
+    }
+  };
+
   const value = {
     user,
     session,
@@ -225,6 +254,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signUp,
     signOut,
     resetPassword,
+    resendConfirmation,
   };
 
   return (
@@ -236,26 +266,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
 // Helper function to translate error messages
 const getErrorMessage = (error: AuthError): string => {
-  switch (error.message) {
-    case 'Invalid login credentials':
-      return 'Email ou senha incorretos';
-    case 'Email not confirmed':
-      return 'Email não confirmado. Verifique sua caixa de entrada.';
-    case 'User already registered':
-      return 'Este email já está cadastrado';
-    case 'Password should be at least 6 characters':
-      return 'A senha deve ter pelo menos 6 caracteres';
-    case 'Invalid email':
-      return 'Email inválido';
-    case 'Signup is disabled':
-      return 'Cadastro desabilitado temporariamente';
-    case 'Too many requests':
-      return 'Muitas tentativas. Tente novamente em alguns minutos.';
-    case 'User already exists':
-      return 'Este email já está cadastrado';
-    case 'Weak password':
-      return 'A senha é muito fraca. Use pelo menos 6 caracteres.';
-    default:
-      return error.message || 'Ocorreu um erro inesperado';
+  // Check for specific error codes first
+  if (error.message?.includes('Invalid login credentials')) {
+    return 'Email ou senha incorretos. Verifique suas credenciais e tente novamente.';
   }
+  
+  if (error.message?.includes('Email not confirmed')) {
+    return 'Email não confirmado. Verifique sua caixa de entrada e clique no link de confirmação.';
+  }
+  
+  if (error.message?.includes('User already registered')) {
+    return 'Este email já está cadastrado. Tente fazer login ou use outro email.';
+  }
+  
+  if (error.message?.includes('Password should be at least 6 characters')) {
+    return 'A senha deve ter pelo menos 6 caracteres.';
+  }
+  
+  if (error.message?.includes('Invalid email')) {
+    return 'Email inválido. Verifique o formato do email.';
+  }
+  
+  if (error.message?.includes('Signup is disabled')) {
+    return 'Cadastro desabilitado temporariamente. Tente novamente mais tarde.';
+  }
+  
+  if (error.message?.includes('Too many requests')) {
+    return 'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.';
+  }
+  
+  if (error.message?.includes('Invalid email or password')) {
+    return 'Email ou senha incorretos. Verifique suas credenciais.';
+  }
+  
+  if (error.message?.includes('User not found')) {
+    return 'Usuário não encontrado. Verifique o email ou cadastre-se.';
+  }
+  
+  // Return the original message if no specific translation found
+  return error.message || 'Ocorreu um erro inesperado. Tente novamente.';
 };
