@@ -27,6 +27,7 @@ import { Profile } from "./pages/Profile";
 import { Appointments } from "./pages/Appointments";
 import PatientAnamnesis from "./pages/PatientAnamnesis";
 import { EmailConfirmation } from "./pages/EmailConfirmation";
+import { ResetPassword } from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/confirm-email" element={<EmailConfirmation />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               {/* Página pública para pacientes preencherem anamnese */}
               <Route path="/anamnese" element={<PatientAnamnesis />} />
               {/* Rotas protegidas dentro do layout */}
