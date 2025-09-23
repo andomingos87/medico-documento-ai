@@ -34,7 +34,8 @@ export const Register = () => {
     const { error } = await signUp(email, password);
     
     if (!error) {
-      setTimeout(() => navigate('/login'), 2000);
+      // User will be automatically logged in, so redirect to dashboard
+      navigate('/dashboard', { replace: true });
     }
   };
 

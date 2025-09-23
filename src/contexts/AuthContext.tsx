@@ -115,14 +115,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signUp = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const redirectUrl = `${window.location.origin}/dashboard`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl
-        }
+        password
       });
       
       if (error) {
@@ -131,14 +127,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           description: getErrorMessage(error),
           variant: "destructive",
         });
+        return { error };
+      }
+
+      // Check if user was created and session is available (no email confirmation required)
+      if (data.user && data.session) {
+        // User is automatically logged in
+        setUser(data.user);
+        setSession(data.session);
+        toast({
+          title: "Cadastro realizado com sucesso!",
+          description: "Bem-vindo ao Smart Termos!",
+        });
+        return { error: null };
       } else {
+        // Fallback case (shouldn't happen with email confirmation disabled)
         toast({
           title: "Cadastro realizado!",
-          description: "Verifique seu email para confirmar sua conta.",
+          description: "Sua conta foi criada com sucesso.",
         });
+        return { error: null };
       }
-      
-      return { error };
     } catch (error) {
       const authError = error as AuthError;
       toast({
@@ -242,6 +251,10 @@ const getErrorMessage = (error: AuthError): string => {
       return 'Cadastro desabilitado temporariamente';
     case 'Too many requests':
       return 'Muitas tentativas. Tente novamente em alguns minutos.';
+    case 'User already exists':
+      return 'Este email já está cadastrado';
+    case 'Weak password':
+      return 'A senha é muito fraca. Use pelo menos 6 caracteres.';
     default:
       return error.message || 'Ocorreu um erro inesperado';
   }

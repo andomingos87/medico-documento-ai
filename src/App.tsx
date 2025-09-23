@@ -25,6 +25,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { Profile } from "./pages/Profile";
 import { Appointments } from "./pages/Appointments";
+import PatientAnamnesis from "./pages/PatientAnamnesis";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,8 @@ const App = () => (
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              {/* Página pública para pacientes preencherem anamnese */}
+              <Route path="/anamnese" element={<PatientAnamnesis />} />
               {/* Rotas protegidas dentro do layout */}
               <Route element={
                 <ProtectedRoute>
