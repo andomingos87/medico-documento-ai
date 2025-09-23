@@ -12,9 +12,10 @@ import { EditAppointmentDialog } from "@/components/appointments/EditAppointment
 import Calendar from "react-calendar";
 import { isSameDay } from "date-fns";
 import { toast } from "@/hooks/use-toast";
+import { DataTable, type Column } from "@/components/shared/DataTable";
 
 export const Appointments = () => {
-  const [view, setView] = React.useState<"lista" | "calendario">("lista");
+  const [view, setView] = React.useState<"lista" | "calendario" | "tabela">("lista");
   const { items, stats, filters, updateFilters, isLoading, error, createAppointment, updateAppointment, deleteAppointment } = useAppointments();
   const [professionals, setProfessionals] = React.useState<ProfessionalRow[]>([]);
   const [openNew, setOpenNew] = React.useState(false);
@@ -135,6 +136,7 @@ export const Appointments = () => {
         <TabsList>
           <TabsTrigger value="lista">Lista</TabsTrigger>
           <TabsTrigger value="calendario">Calendário</TabsTrigger>
+          <TabsTrigger value="tabela">Tabela</TabsTrigger>
         </TabsList>
         <TabsContent value="lista" className="mt-4">
           {isLoading ? (
@@ -186,6 +188,49 @@ export const Appointments = () => {
                 </div>
               ))}
             </div>
+          )}
+        </TabsContent>
+        <TabsContent value="tabela" className="mt-4">
+          {isLoading ? (
+            <div className="border rounded-md p-6 text-sm text-muted-foreground">Carregando agendamentos...</div>
+          ) : error ? (
+            <div className="border rounded-md p-6 text-sm text-red-600">{error}</div>
+          ) : (
+            <DataTable
+              data={items}
+              getRowId={(r) => r.id}
+              emptyMessage="Nenhum agendamento encontrado."
+              columns={([
+                { header: 'Data/Hora', cell: (r) => new Date(r.scheduled_at).toLocaleString() },
+                { header: 'Paciente', cell: (r) => r.patient?.name || 'Paciente' },
+                { header: 'Profissional', cell: (r) => r.professional?.name || '—' },
+                { header: 'Procedimento', cell: (r) => r.procedure?.name || '—' },
+                { header: 'Status', cell: (r) => (
+                  <span className={`text-xs uppercase tracking-wide px-2 py-1 rounded ${statusChipClass(r.status)}`}>
+                    {r.status}
+                  </span>
+                ) },
+              ]) as Column<typeof items[number]>[]}
+              actions={[
+                {
+                  label: 'Editar',
+                  onClick: (row) => { setSelectedId(row.id); setOpenEdit(true); },
+                },
+                {
+                  label: 'Excluir',
+                  variant: 'destructive',
+                  onClick: async (row) => {
+                    if (!confirm('Excluir este agendamento?')) return;
+                    try {
+                      await deleteAppointment(row.id);
+                      toast({ title: 'Agendamento excluído', description: 'O agendamento foi removido com sucesso.' });
+                    } catch (e: any) {
+                      toast({ title: 'Erro ao excluir', description: e?.message ?? 'Tente novamente.', variant: 'destructive' });
+                    }
+                  },
+                },
+              ]}
+            />
           )}
         </TabsContent>
         <TabsContent value="calendario" className="mt-4">

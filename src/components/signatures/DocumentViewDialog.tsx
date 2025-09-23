@@ -41,7 +41,7 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto flex flex-col">
         <DialogHeader>
           <DialogTitle>Termo de Consentimento</DialogTitle>
           <DialogDescription>

@@ -68,7 +68,7 @@ export const NewPatientDialog = ({ trigger, onCreatePatient }: NewPatientDialogP
           </PrimaryActionButton>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Cadastrar Novo Paciente</DialogTitle>
         </DialogHeader>

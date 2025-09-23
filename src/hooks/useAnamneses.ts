@@ -59,9 +59,15 @@ export const useAnamneses = () => {
     procedureId: r.procedure_id,
     procedureName: r.procedure_name,
     createdAt: r.created_at,
-    status: r.status,
-    medicalHistory: r.medical_history as Anamnesis['medicalHistory'],
-    aestheticsHistory: r.aesthetics_history as Anamnesis['aestheticsHistory'],
+    status: (r.status as Anamnesis['status'] | undefined) ?? 'draft',
+    medicalHistory: (typeof r.medical_history === 'string' ? JSON.parse(r.medical_history as unknown as string) : r.medical_history) as any ?? {
+      continuousMedication: false,
+      medicationAllergy: false,
+    },
+    aestheticsHistory: (typeof r.aesthetics_history === 'string' ? JSON.parse(r.aesthetics_history as unknown as string) : r.aesthetics_history) as any ?? {
+      previousProcedures: false,
+      complications: false,
+    },
     expectations: r.expectations,
     awareness: r.awareness,
   })), [rows]);

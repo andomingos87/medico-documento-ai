@@ -12,9 +12,10 @@ interface Props {
   onSubmit: (values: NewAnamnesisValues) => void;
   onCancel: () => void;
   submitLabel?: string;
+  onSendLink?: (payload: { patientId: string; patientName: string; procedureId: string; procedureName: string; whatsapp: string }) => void;
 }
 
-export const AnamnesisForm: React.FC<Props> = ({ defaultValues, onSubmit, onCancel, submitLabel = 'Enviar link' }) => {
+export const AnamnesisForm: React.FC<Props> = ({ defaultValues, onSubmit, onCancel, submitLabel = 'Enviar link', onSendLink }) => {
   const { getPatientById } = usePatients();
 
   // Estado mínimo necessário para criação do link
@@ -74,7 +75,33 @@ export const AnamnesisForm: React.FC<Props> = ({ defaultValues, onSubmit, onCanc
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="secondary" onClick={onCancel}>Cancelar</Button>
-        <Button type="button">{submitLabel}</Button>
+        {onSendLink ? (
+          <>
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => onSubmit(values)}
+              disabled={!values.patientId || !values.procedureId}
+            >
+              Fazer agora
+            </Button>
+            <Button
+              type="button"
+              onClick={() => onSendLink?.({
+                patientId: values.patientId,
+                patientName: values.patientName,
+                procedureId: values.procedureId,
+                procedureName: values.procedureName,
+                whatsapp,
+              })}
+              disabled={!values.patientId || !values.procedureId || !whatsapp}
+            >
+              Enviar link
+            </Button>
+          </>
+        ) : (
+          <Button type="button" onClick={() => onSubmit(values)}>{submitLabel}</Button>
+        )}
       </div>
     </form>
   );

@@ -1,14 +1,15 @@
 
 import React, { useState } from 'react';
 import { Patient, UpdatePatientData } from './types';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatDate } from '@/lib/formatDate';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PatientDetailsView } from './PatientDetailsView';
 import { EditPatientDialog } from './EditPatientDialog';
 import { DeletePatientDialog } from './DeletePatientDialog';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DataTable, type Column } from '@/components/shared/DataTable';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MoreHorizontal } from 'lucide-react';
 
 interface PatientsListProps {
   patients: Patient[];
@@ -27,72 +28,37 @@ export const PatientsList = ({ patients, isLoading, onUpdatePatient, onDeletePat
   return (
     <>
       <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>CPF</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Telefone</TableHead>
-                <TableHead>Data de cadastro</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-36" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-8 w-20 ml-auto" />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : patients.length > 0 ? (
-                patients.map(patient => (
-                  <TableRow key={patient.id}>
-                    <TableCell className="font-medium">{patient.name}</TableCell>
-                    <TableCell>{patient.cpf}</TableCell>
-                    <TableCell>{patient.email}</TableCell>
-                    <TableCell>{patient.phone}</TableCell>
-                    <TableCell>{formatDate(patient.created_at)}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleViewDetails(patient)}
-                      >
-                        Ver detalhes
-                      </Button>
-                      <EditPatientDialog patient={patient} onUpdatePatient={onUpdatePatient} />
-                      <DeletePatientDialog patient={patient} onDeletePatient={onDeletePatient} />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12">
-                    <div className="flex flex-col items-center space-y-2">
-                      <p className="text-neutral-500">Nenhum paciente encontrado</p>
-                      <p className="text-sm text-neutral-400">
-                        {patients.length === 0 ? 'Cadastre o primeiro paciente para começar' : 'Tente ajustar os filtros de busca'}
-                      </p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        <DataTable
+          data={patients}
+          loading={Boolean(isLoading)}
+          getRowId={(r) => r.id}
+          emptyMessage={patients.length === 0 ? 'Cadastre o primeiro paciente para começar' : 'Nenhum paciente encontrado'}
+          className="border-0 rounded-none"
+          columns={[
+            { header: 'Nome', cell: (r) => <span className="font-medium">{r.name}</span> },
+            { header: 'CPF', accessor: 'cpf' as any },
+            { header: 'Email', accessor: 'email' as any },
+            { header: 'Telefone', accessor: 'phone' as any },
+            { header: 'Data de cadastro', cell: (r) => formatDate(r.created_at) },
+          ] as Column<Patient>[]}
+          renderActions={(row) => (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => handleViewDetails(row)}>Ver detalhes</DropdownMenuItem>
+                <EditPatientDialog patient={row} onUpdatePatient={onUpdatePatient} trigger={<DropdownMenuItem>Editar</DropdownMenuItem>} />
+                <DeletePatientDialog patient={row} onDeletePatient={onDeletePatient} trigger={<DropdownMenuItem className="text-red-600">Excluir</DropdownMenuItem>} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        />
       </div>
 
       <Dialog open={!!selectedPatient} onOpenChange={() => setSelectedPatient(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Detalhes do Paciente</DialogTitle>
           </DialogHeader>

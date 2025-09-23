@@ -79,7 +79,7 @@ export const Anamneses: React.FC = () => {
       <DeleteAnamnesisDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
-        onConfirm={() => { if (selected) deleteItem(selected.id); setIsDeleteOpen(false); }}
+        onConfirm={() => { if (selected) deleteItem(selected.id); setIsDeleteOpen(false); setSelected(null); }}
       />
     </div>
   );
