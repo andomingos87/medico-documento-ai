@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createAnamnesis, deleteAnamnesis, listAnamneses, updateAnamnesis } from '@/integrations/supabase/anamneses';
+import { createAnamnesis, deleteAnamnesis, listAnamneses, updateAnamnesis, sendAnamnesisLink } from '@/integrations/supabase/anamneses';
+import { getPatientById } from '@/integrations/supabase/patients';
 
 export type AnamnesisStatus = 'draft' | 'link_sent' | 'completed';
 
@@ -121,7 +122,36 @@ export const useAnamneses = () => {
   });
 
   const sendLinkMutation = useMutation({
-    mutationFn: (id: string) => updateAnamnesis(id, { status: 'link_sent' }),
+    mutationFn: async (id: string) => {
+      // Buscar dados da anamnese
+      const anamnesis = items.find(item => item.id === id);
+      if (!anamnesis) {
+        throw new Error('Anamnese não encontrada');
+      }
+
+      // Buscar dados completos do paciente
+      const patient = await getPatientById(anamnesis.patientId);
+      if (!patient) {
+        throw new Error('Paciente não encontrado');
+      }
+
+      if (!patient.phone) {
+        throw new Error('Paciente não possui WhatsApp cadastrado');
+      }
+
+      // Enviar link usando o serviço centralizado
+      await sendAnamnesisLink(
+        anamnesis.id,
+        anamnesis.patientId,
+        anamnesis.patientName,
+        anamnesis.procedureId,
+        anamnesis.procedureName,
+        patient.phone
+      );
+
+      // Atualizar status no banco
+      await updateAnamnesis(id, { status: 'link_sent' });
+    },
     onSuccess: () => {
       toast.success('Link de anamnese enviado ao paciente.');
       qc.invalidateQueries({ queryKey: ['anamneses'] });

@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AnamnesisQuestionnaireForm, type AnamnesisQuestionnaireValues } from '@/components/anamneses/AnamnesisQuestionnaireForm';
-import { updateAnamnesis } from '@/integrations/supabase/anamneses';
+import { PatientAnamnesisForm, type PatientAnamnesisFormValues } from '@/components/anamneses/PatientAnamnesisForm';
+import { updateAnamnesis, getAnamnesisById, type AnamnesisWithPatient } from '@/integrations/supabase/anamneses';
 import { toast } from 'sonner';
-import { Calendar, Shield } from 'lucide-react';
+import { Calendar, Shield, Loader2 } from 'lucide-react';
 
 export const PatientAnamnesis: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -16,7 +16,42 @@ export const PatientAnamnesis: React.FC = () => {
   const [birthDate, setBirthDate] = useState('');
   const [isValidated, setIsValidated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const [error, setError] = useState('');
+  const [anamnesisData, setAnamnesisData] = useState<AnamnesisWithPatient | null>(null);
+  const [patientData, setPatientData] = useState<AnamnesisWithPatient['patient'] | null>(null);
+
+  // Carregar dados da anamnese e paciente
+  useEffect(() => {
+    const loadAnamnesisData = async () => {
+      if (!anamnesisId) return;
+      
+      try {
+        setIsLoadingData(true);
+        const data = await getAnamnesisById(anamnesisId);
+        
+        if (!data) {
+          setError('Anamnese não encontrada.');
+          return;
+        }
+
+        setAnamnesisData(data);
+        setPatientData(data.patient);
+        
+        // Se já tem dados do paciente, preencher automaticamente
+        if (data.patient?.birth_date) {
+          setBirthDate(data.patient.birth_date);
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Erro ao carregar dados da anamnese.');
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    loadAnamnesisData();
+  }, [anamnesisId]);
 
   const handleValidateBirthDate = async () => {
     if (!anamnesisId || !birthDate) {
@@ -24,13 +59,21 @@ export const PatientAnamnesis: React.FC = () => {
       return;
     }
 
+    if (!patientData) {
+      setError('Dados do paciente não carregados.');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError('');
       
-      // Aqui você validaria a data de nascimento contra o banco
-      // Por enquanto, vamos assumir que a validação passou
-      // Em produção, você faria uma consulta para verificar se a data confere
+      // Validar data de nascimento contra os dados reais do paciente
+      const patientBirthDate = patientData.birth_date;
+      if (birthDate !== patientBirthDate) {
+        setError('Data de nascimento não confere com nossos registros.');
+        return;
+      }
       
       setIsValidated(true);
       toast.success('Validação realizada com sucesso!');
@@ -42,7 +85,7 @@ export const PatientAnamnesis: React.FC = () => {
     }
   };
 
-  const handleSubmitQuestionnaire = async (values: AnamnesisQuestionnaireValues) => {
+  const handleSubmitQuestionnaire = async (values: PatientAnamnesisFormValues) => {
     if (!anamnesisId) return;
 
     try {
@@ -85,6 +128,25 @@ export const PatientAnamnesis: React.FC = () => {
     }
   };
 
+  // Loading state
+  if (isLoadingData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <div className="flex items-center justify-center mb-4">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            </div>
+            <CardTitle className="text-center">Carregando...</CardTitle>
+            <CardDescription className="text-center">
+              Carregando dados da anamnese.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
   if (!anamnesisId) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -93,6 +155,21 @@ export const PatientAnamnesis: React.FC = () => {
             <CardTitle className="text-center text-red-600">Link Inválido</CardTitle>
             <CardDescription className="text-center">
               O link de anamnese não é válido ou está corrompido.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error && !isValidated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center text-red-600">Erro</CardTitle>
+            <CardDescription className="text-center">
+              {error}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -164,11 +241,21 @@ export const PatientAnamnesis: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <AnamnesisQuestionnaireForm
-              onSubmit={handleSubmitQuestionnaire}
-              onCancel={() => window.close()}
-              submitLabel={isLoading ? 'Salvando...' : 'Finalizar Anamnese'}
-            />
+            {patientData && anamnesisData && (
+              <PatientAnamnesisForm
+                patientData={{
+                  name: patientData.name,
+                  phone: patientData.phone,
+                  email: patientData.email,
+                  birth_date: patientData.birth_date,
+                }}
+                procedureName={anamnesisData.procedure_name}
+                onSubmit={handleSubmitQuestionnaire}
+                onCancel={() => window.close()}
+                submitLabel={isLoading ? 'Salvando...' : 'Finalizar Anamnese'}
+                isLoading={isLoading}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

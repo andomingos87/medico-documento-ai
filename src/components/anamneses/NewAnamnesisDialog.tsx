@@ -6,7 +6,7 @@ import { AnamnesisForm } from './AnamnesisForm';
 import { Dialog as UIDialog } from '@/components/ui/dialog';
 import { AnamnesisQuestionnaireForm, type AnamnesisQuestionnaireValues } from './AnamnesisQuestionnaireForm';
 import { useState } from 'react';
-import { createAnamnesis, updateAnamnesis } from '@/integrations/supabase/anamneses';
+import { createAnamnesis, updateAnamnesis, sendAnamnesisLink } from '@/integrations/supabase/anamneses';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { NewAnamnesisValues } from '@/hooks/useAnamneses';
@@ -23,44 +23,39 @@ export const NewAnamnesisDialog: React.FC<Props> = ({ open, onOpenChange, onSubm
   const qc = useQueryClient();
   const [sending, setSending] = useState(false);
 
-  const handleSendLink = async (payload: { patientId: string; patientName: string; procedureId: string; procedureName: string; whatsapp: string }) => {
+  const handleSendLink = async (payload: { patientId: string; patientName: string; procedureId: string; procedureName: string; whatsapp: string; }) => {
     try {
       setSending(true);
-      const digits = (payload.whatsapp || '').replace(/\D/g, '');
-      const whatsappE164 = digits.startsWith('55') ? digits : `55${digits}`;
 
-      const resp = await fetch('https://smart-termos-n8n.t9frad.easypanel.host/webhook/send-anamnese', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...payload, whatsapp: whatsappE164 }),
+      // Criar a anamnese primeiro para obter o ID
+      const created = await createAnamnesis({
+        patient_id: payload.patientId,
+        patient_name: payload.patientName,
+        procedure_id: payload.procedureId,
+        procedure_name: payload.procedureName,
+        status: 'draft',
       });
 
-      if (!resp.ok) {
-        toast.error('Não foi possível enviar o link.');
-        return;
-      }
+      // Usar o serviço centralizado para enviar o link
+      await sendAnamnesisLink(
+        created.id,
+        payload.patientId,
+        payload.patientName,
+        payload.procedureId,
+        payload.procedureName,
+        payload.whatsapp
+      );
 
       toast.success('Link enviado com sucesso.');
 
-      try {
-        const created = await createAnamnesis({
-          patient_id: payload.patientId,
-          patient_name: payload.patientName,
-          procedure_id: payload.procedureId,
-          procedure_name: payload.procedureName,
-          status: 'draft',
-        });
-        await updateAnamnesis(created.id, { status: 'link_sent' });
-        await qc.invalidateQueries({ queryKey: ['anamneses'] });
-      } catch (dbErr) {
-        console.error(dbErr);
-        toast.warning('Link enviado, mas não foi possível registrar no sistema.');
-      }
+      // Atualizar status para link_sent
+      await updateAnamnesis(created.id, { status: 'link_sent' });
+      await qc.invalidateQueries({ queryKey: ['anamneses'] });
 
       onOpenChange(false);
     } catch (e) {
       console.error(e);
-      toast.error('Não foi possível enviar o link.');
+      toast.error(e.message || 'Não foi possível enviar o link.');
     } finally {
       setSending(false);
     }

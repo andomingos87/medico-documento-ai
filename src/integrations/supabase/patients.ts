@@ -12,3 +12,19 @@ export async function listPatients(params?: { search?: string }) {
   if (error) throw error;
   return (data as Pick<PatientRow, 'id' | 'name'>[]) || [];
 }
+
+// Nova função para obter dados completos do paciente
+export async function getPatientById(id: string): Promise<PatientRow | null> {
+  const { data, error } = await supabase
+    .from('patients')
+    .select('*')
+    .eq('id', id)
+    .single();
+  
+  if (error) {
+    if (error.code === 'PGRST116') return null; // Not found
+    throw error;
+  }
+  
+  return data as PatientRow;
+}
