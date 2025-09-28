@@ -95,20 +95,37 @@ export const Dashboard = () => {
           })(),
           listDocuments({ page: 1, pageSize: 5 }),
           listTasks(),
-          // Contagens diretas no Supabase
+          // Contagens diretas no Supabase com tratamento de erro melhorado
           (async () => {
-            const { count, error } = await (supabase as any)
-              .from('patients')
-              .select('*', { count: 'exact', head: true });
-            if (error) throw error;
-            return count || 0;
+            try {
+              const { count, error } = await (supabase as any)
+                .from('patients')
+                .select('*', { count: 'exact', head: true })
+                .is('deleted_at', null);
+              if (error) {
+                console.warn('Erro ao contar pacientes:', error);
+                return 0;
+              }
+              return count || 0;
+            } catch (err) {
+              console.warn('Erro ao contar pacientes:', err);
+              return 0;
+            }
           })(),
           (async () => {
-            const { count, error } = await (supabase as any)
-              .from('anamneses')
-              .select('*', { count: 'exact', head: true });
-            if (error) throw error;
-            return count || 0;
+            try {
+              const { count, error } = await (supabase as any)
+                .from('anamneses')
+                .select('*', { count: 'exact', head: true });
+              if (error) {
+                console.warn('Erro ao contar anamneses:', error);
+                return 0;
+              }
+              return count || 0;
+            } catch (err) {
+              console.warn('Erro ao contar anamneses:', err);
+              return 0;
+            }
           })(),
         ]);
 
@@ -124,7 +141,7 @@ export const Dashboard = () => {
         setPatientsCount(patientsCnt as number);
         setAnamnesesCount(anamnesesCnt as number);
       } catch (e: any) {
-        console.error(e);
+        console.error('Erro geral no dashboard:', e);
         if (isMounted) setError(e?.message || 'Erro ao carregar o dashboard');
       } finally {
         if (isMounted) setLoading(false);
@@ -142,24 +159,28 @@ export const Dashboard = () => {
       value: String(patientsCount), 
       icon: FilePlus,
       trend: undefined,
+      isEmpty: patientsCount === 0,
     },
     { 
       title: 'Anamneses', 
       value: String(anamnesesCount), 
       icon: FileSignature, 
       trend: undefined,
+      isEmpty: anamnesesCount === 0,
     },
     { 
       title: 'Termos (Total)', 
       value: String(totalDocs), 
       icon: FileText, 
       trend: undefined,
+      isEmpty: totalDocs === 0,
     },
     { 
       title: 'Termos Assinados', 
       value: String(signedDocs), 
       icon: FileCheck, 
       trend: undefined,
+      isEmpty: signedDocs === 0,
     },
   ]), [patientsCount, anamnesesCount, totalDocs, signedDocs]);
 
@@ -228,6 +249,7 @@ export const Dashboard = () => {
             value={stat.value}
             icon={stat.icon}
             trend={stat.trend}
+            isEmpty={stat.isEmpty}
           />
         ))}
       </div>
@@ -240,26 +262,34 @@ export const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {recentDocuments.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="flex items-center p-3 hover:bg-muted/50 rounded-lg transition-smooth cursor-pointer"
-                  onClick={() => { setSelectedDoc(doc); setDocModalOpen(true); }}
-                >
-                  <FileText className="mr-3 h-5 w-5 text-primary" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-card-foreground truncate">{doc.title}</p>
-                    <p className="text-sm text-muted-foreground">{doc.patient_ref?.name || doc.patient || '—'}</p>
+              {recentDocuments.length > 0 ? (
+                recentDocuments.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center p-3 hover:bg-muted/50 rounded-lg transition-smooth cursor-pointer"
+                    onClick={() => { setSelectedDoc(doc); setDocModalOpen(true); }}
+                  >
+                    <FileText className="mr-3 h-5 w-5 text-primary" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-card-foreground truncate">{doc.title}</p>
+                      <p className="text-sm text-muted-foreground">{doc.patient_ref?.name || doc.patient || '—'}</p>
+                    </div>
+                    <div className="text-xs mr-3">
+                      {createStatusBadge(mapDocStatusForBadge(doc.status))}
+                    </div>
+                    <div className="text-sm text-muted-foreground flex items-center">
+                      <Calendar className="mr-1 h-4 w-4" />
+                      {new Date(doc.created_at).toLocaleDateString()}
+                    </div>
                   </div>
-                  <div className="text-xs mr-3">
-                    {createStatusBadge(mapDocStatusForBadge(doc.status))}
-                  </div>
-                  <div className="text-sm text-muted-foreground flex items-center">
-                    <Calendar className="mr-1 h-4 w-4" />
-                    {new Date(doc.created_at).toLocaleDateString()}
-                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <FileText className="h-12 w-12 text-muted-foreground/50 mb-3" />
+                  <p className="text-sm text-muted-foreground">Nenhum documento encontrado</p>
+                  <p className="text-xs text-muted-foreground mt-1">Crie seu primeiro termo de consentimento</p>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
@@ -271,23 +301,31 @@ export const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {upcomingTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-center p-3 hover:bg-muted/50 rounded-lg transition-smooth cursor-pointer"
-                  onClick={() => { setSelectedTask(task); setTaskModalOpen(true); }}
-                >
-                  <div className={`w-3 h-3 rounded-full ${getPriorityDotClass(task.priority)} mr-3`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-card-foreground truncate">{task.title}</p>
-                    <p className="text-sm text-muted-foreground">{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'Sem prazo'}</p>
+              {upcomingTasks.length > 0 ? (
+                upcomingTasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex items-center p-3 hover:bg-muted/50 rounded-lg transition-smooth cursor-pointer"
+                    onClick={() => { setSelectedTask(task); setTaskModalOpen(true); }}
+                  >
+                    <div className={`w-3 h-3 rounded-full ${getPriorityDotClass(task.priority)} mr-3`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-card-foreground truncate">{task.title}</p>
+                      <p className="text-sm text-muted-foreground">{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'Sem prazo'}</p>
+                    </div>
+                    <div className="text-sm text-muted-foreground flex items-center">
+                      <Clock className="mr-1 h-4 w-4" />
+                      {new Date(task.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground flex items-center">
-                    <Clock className="mr-1 h-4 w-4" />
-                    {new Date(task.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <Clock className="h-12 w-12 text-muted-foreground/50 mb-3" />
+                  <p className="text-sm text-muted-foreground">Nenhuma tarefa pendente</p>
+                  <p className="text-xs text-muted-foreground mt-1">Todas as tarefas estão em dia</p>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>

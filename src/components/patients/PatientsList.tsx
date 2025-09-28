@@ -20,9 +20,19 @@ interface PatientsListProps {
 
 export const PatientsList = ({ patients, isLoading, onUpdatePatient, onDeletePatient }: PatientsListProps) => {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
 
   const handleViewDetails = (patient: Patient) => {
     setSelectedPatient(patient);
+  };
+
+  const handleDeleteClick = (patient: Patient) => {
+    setPatientToDelete(patient);
+  };
+
+  const handleEditClick = (patient: Patient) => {
+    setPatientToEdit(patient);
   };
 
   return (
@@ -49,8 +59,13 @@ export const PatientsList = ({ patients, isLoading, onUpdatePatient, onDeletePat
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Ações</DropdownMenuLabel>
                 <DropdownMenuItem onClick={() => handleViewDetails(row)}>Ver detalhes</DropdownMenuItem>
-                <EditPatientDialog patient={row} onUpdatePatient={onUpdatePatient} trigger={<DropdownMenuItem>Editar</DropdownMenuItem>} />
-                <DeletePatientDialog patient={row} onDeletePatient={onDeletePatient} trigger={<DropdownMenuItem className="text-red-600">Excluir</DropdownMenuItem>} />
+                <DropdownMenuItem onClick={() => handleEditClick(row)}>Editar</DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="text-red-600" 
+                  onClick={() => handleDeleteClick(row)}
+                >
+                  Excluir
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -65,6 +80,24 @@ export const PatientsList = ({ patients, isLoading, onUpdatePatient, onDeletePat
           {selectedPatient && <PatientDetailsView patient={selectedPatient} />}
         </DialogContent>
       </Dialog>
+
+      {patientToDelete && (
+        <DeletePatientDialog 
+          patient={patientToDelete} 
+          onDeletePatient={onDeletePatient}
+          open={!!patientToDelete}
+          onOpenChange={(open) => !open && setPatientToDelete(null)}
+        />
+      )}
+
+      {patientToEdit && (
+        <EditPatientDialog 
+          patient={patientToEdit} 
+          onUpdatePatient={onUpdatePatient}
+          open={!!patientToEdit}
+          onOpenChange={(open) => !open && setPatientToEdit(null)}
+        />
+      )}
     </>
   );
 };

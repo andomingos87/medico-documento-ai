@@ -10,12 +10,17 @@ interface EditPatientDialogProps {
   patient: Patient;
   trigger?: React.ReactNode;
   onUpdatePatient: (id: string, data: UpdatePatientData) => Promise<any>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const EditPatientDialog = ({ patient, trigger, onUpdatePatient }: EditPatientDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const EditPatientDialog = ({ patient, trigger, onUpdatePatient, open: controlledOpen, onOpenChange }: EditPatientDialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
 
   const handleSubmit = async (data: any) => {
     try {
@@ -59,14 +64,19 @@ export const EditPatientDialog = ({ patient, trigger, onUpdatePatient }: EditPat
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
+      {trigger && (
+        <DialogTrigger asChild>
+          {trigger}
+        </DialogTrigger>
+      )}
+      {!trigger && (
+        <DialogTrigger asChild>
           <Button variant="ghost" size="sm">
             <Edit className="w-4 h-4 mr-2" />
             Editar
           </Button>
-        )}
-      </DialogTrigger>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Editar Paciente</DialogTitle>

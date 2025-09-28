@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import type { Anamnesis } from '@/hooks/useAnamneses';
 import { DataTable, type Column } from '@/components/shared/DataTable';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MoreHorizontal } from 'lucide-react';
 
 interface Props {
   items: Anamnesis[];
@@ -23,6 +26,27 @@ const StatusBadge: React.FC<{ status: Anamnesis['status'] | undefined | null }> 
 };
 
 export const AnamnesesList: React.FC<Props> = ({ items, onView, onEdit, onDelete, onSendLink }) => {
+  const [selectedForAction, setSelectedForAction] = useState<Anamnesis | null>(null);
+
+  const handleViewClick = (item: Anamnesis) => {
+    setSelectedForAction(item);
+    onView(item);
+  };
+
+  const handleEditClick = (item: Anamnesis) => {
+    setSelectedForAction(item);
+    onEdit(item);
+  };
+
+  const handleDeleteClick = (item: Anamnesis) => {
+    setSelectedForAction(item);
+    onDelete(item);
+  };
+
+  const handleSendLinkClick = (item: Anamnesis) => {
+    onSendLink(item);
+  };
+
   const columns: Column<Anamnesis>[] = [
     { header: 'Paciente', cell: (r) => <span className="font-medium">{r.patientName}</span> },
     { header: 'Procedimento', accessor: 'procedureName' as any },
@@ -39,13 +63,33 @@ export const AnamnesesList: React.FC<Props> = ({ items, onView, onEdit, onDelete
       columns={columns}
       emptyMessage="Nenhum registro"
       getRowId={(r) => r.id}
-      onRowClick={(row) => onView(row)}
-      actions={[
-        { label: 'Visualizar', onClick: (row) => onView(row) },
-        { label: 'Editar', onClick: (row) => onEdit(row) },
-        { label: 'Enviar link', onClick: (row) => onSendLink(row) },
-        { label: 'Deletar', onClick: (row) => onDelete(row), variant: 'destructive' },
-      ]}
+      renderActions={(row) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => handleViewClick(row)}>
+              Visualizar
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleEditClick(row)}>
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleSendLinkClick(row)}>
+              Enviar link
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              className="text-red-600" 
+              onClick={() => handleDeleteClick(row)}
+            >
+              Deletar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     />
   );
 };

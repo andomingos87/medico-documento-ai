@@ -19,12 +19,17 @@ interface DeletePatientDialogProps {
   patient: Patient;
   trigger?: React.ReactNode;
   onDeletePatient: (id: string) => Promise<void>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const DeletePatientDialog = ({ patient, trigger, onDeletePatient }: DeletePatientDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const DeletePatientDialog = ({ patient, trigger, onDeletePatient, open: controlledOpen, onOpenChange }: DeletePatientDialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
 
   const handleDelete = async () => {
     try {
@@ -52,30 +57,37 @@ export const DeletePatientDialog = ({ patient, trigger, onDeletePatient }: Delet
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        {trigger || (
+      {trigger && (
+        <AlertDialogTrigger asChild>
+          {trigger}
+        </AlertDialogTrigger>
+      )}
+      {!trigger && (
+        <AlertDialogTrigger asChild>
           <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
             <Trash2 className="w-4 h-4 mr-2" />
             Excluir
           </Button>
-        )}
-      </AlertDialogTrigger>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
-            <p>
-              Tem certeza que deseja excluir o paciente <strong>{patient.name}</strong>?
-            </p>
-            {hasDocuments && (
-              <p className="text-amber-600">
-                <strong>Atenção:</strong> Este paciente possui {patient.documents.length} documento(s) 
-                associado(s). Os documentos não serão removidos, mas não aparecerão mais na listagem do paciente.
+          <AlertDialogDescription asChild>
+            <div className="space-y-2">
+              <p>
+                Tem certeza que deseja excluir o paciente <strong>{patient.name}</strong>?
               </p>
-            )}
-            <p className="text-muted-foreground text-sm">
-              Esta ação não pode ser desfeita.
-            </p>
+              {hasDocuments && (
+                <p className="text-amber-600">
+                  <strong>Atenção:</strong> Este paciente possui {patient.documents.length} documento(s) 
+                  associado(s). Os documentos não serão removidos, mas não aparecerão mais na listagem do paciente.
+                </p>
+              )}
+              <p className="text-muted-foreground text-sm">
+                Esta ação não pode ser desfeita.
+              </p>
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
