@@ -176,7 +176,7 @@ export async function sendAnamnesisLink(anamnesisId: string, patientId: string, 
   console.log('Payload completo:', payload);
 
   // Enviar para o webhook
-  const resp = await fetch('https://smart-termos-n8n.t9frad.easypanel.host/webhook/send-anamnese', {
+  const resp = await fetch('https://smart-termos-n8n.kpe1qp.easypanel.host/webhook/send-anamnese', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

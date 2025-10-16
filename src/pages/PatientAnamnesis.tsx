@@ -5,10 +5,11 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PatientAnamnesisForm, type PatientAnamnesisFormValues } from '@/components/anamneses/PatientAnamnesisForm';
 import { updateAnamnesis, getAnamnesisById, type AnamnesisWithPatient } from '@/integrations/supabase/anamneses';
 import { toast } from 'sonner';
-import { Calendar, Shield, Loader2 } from 'lucide-react';
+import { Calendar, Shield, Loader2, CheckCircle2, FileText } from 'lucide-react';
 
 export const PatientAnamnesis: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -20,11 +21,16 @@ export const PatientAnamnesis: React.FC = () => {
   const [error, setError] = useState('');
   const [anamnesisData, setAnamnesisData] = useState<AnamnesisWithPatient | null>(null);
   const [patientData, setPatientData] = useState<AnamnesisWithPatient['patient'] | null>(null);
+  const [showGeneratingModal, setShowGeneratingModal] = useState(false);
+  const [isGenerationComplete, setIsGenerationComplete] = useState(false);
 
   // Carregar dados da anamnese e paciente
   useEffect(() => {
     const loadAnamnesisData = async () => {
-      if (!anamnesisId) return;
+      if (!anamnesisId) {
+        setIsLoadingData(false);
+        return;
+      };
       
       try {
         setIsLoadingData(true);
@@ -39,9 +45,9 @@ export const PatientAnamnesis: React.FC = () => {
         setPatientData(data.patient);
         
         // Se já tem dados do paciente, preencher automaticamente
-        if (data.patient?.birth_date) {
-          setBirthDate(data.patient.birth_date);
-        }
+        // if (data.patient?.birth_date) {
+        //  setBirthDate(data.patient.birth_date);
+        //}
       } catch (err) {
         console.error(err);
         setError('Erro ao carregar dados da anamnese.');
@@ -90,10 +96,14 @@ export const PatientAnamnesis: React.FC = () => {
 
     try {
       setIsLoading(true);
+      setShowGeneratingModal(true);
+      setIsGenerationComplete(false);
       
+      // Atualizar anamnese no banco de dados
       await updateAnamnesis(anamnesisId, {
         medical_history: {
           continuousMedication: values.continuousMedication,
+          continuousMedicationDescription: values.continuousMedicationDescription,
           medicationAllergy: values.medicationAllergy,
           chronicDisease: values.chronicDisease,
           chronicDiseaseOther: values.chronicDiseaseOther,
@@ -114,16 +124,61 @@ export const PatientAnamnesis: React.FC = () => {
         status: 'completed',
       });
 
-      toast.success('Anamnese preenchida com sucesso! Obrigado por responder.');
-      
-      // Redirecionar ou mostrar mensagem de sucesso
+      // Enviar dados para o webhook n8n
+      try {
+        const webhookPayload = {
+          anamnesisId,
+          patientData: {
+            name: patientData?.name,
+            phone: patientData?.phone,
+            email: patientData?.email,
+            birthDate: patientData?.birth_date,
+          },
+          procedureName: anamnesisData?.procedure_name,
+          medicalHistory: {
+            continuousMedication: values.continuousMedication,
+            continuousMedicationDescription: values.continuousMedicationDescription,
+            medicationAllergy: values.medicationAllergy,
+            medicationAllergyDescription: values.medicationAllergyDescription,
+            chronicDisease: values.chronicDisease,
+            chronicDiseaseOther: values.chronicDiseaseOther,
+            reactionToProcedures: values.reactionToProcedures,
+            painTolerance: values.painTolerance,
+            awareResultsVary: values.awareResultsVary,
+          },
+          aestheticsHistory: {
+            previousProcedures: values.previousFacialProcedures,
+            previousFacialProcedureOption: values.previousFacialProcedureOption,
+            previousFacialProcedureOther: values.previousFacialProcedureOther,
+            hadComplicationsBefore: values.hadComplicationsBefore,
+            complicationsDescription: values.complicationsDescription,
+          },
+          expectations: values.intendedProcedureDescription,
+          awareness: values.knowledgeLevelDescription,
+        };
+
+        await fetch('https://smart-termos-n8n.t9frad.easypanel.host/webhook/generate-term', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(webhookPayload),
+        });
+      } catch (webhookError) {
+        console.error('Erro ao enviar para webhook:', webhookError);
+        // Não bloquear o fluxo se o webhook falhar
+      }
+
+      // Aguardar 3 segundos e marcar como concluído
       setTimeout(() => {
-        window.close();
-      }, 2000);
+        setIsGenerationComplete(true);
+        setIsLoading(false);
+      }, 3000);
+
     } catch (err) {
       console.error(err);
       toast.error('Erro ao salvar a anamnese. Tente novamente.');
-    } finally {
+      setShowGeneratingModal(false);
       setIsLoading(false);
     }
   };
@@ -204,7 +259,7 @@ export const PatientAnamnesis: React.FC = () => {
               <Input
                 id="birthDate"
                 type="date"
-                value={birthDate}
+                //value={birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
                 className="mt-1"
               />
@@ -224,42 +279,107 @@ export const PatientAnamnesis: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-md bg-green-100 text-green-600 flex items-center justify-center">
-                <Calendar className="h-5 w-5" />
+    <>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-md bg-green-100 text-green-600 flex items-center justify-center">
+                  <Calendar className="h-5 w-5" />
+                </div>
+                <div>
+                  <CardTitle>Questionário de Anamnese</CardTitle>
+                  <CardDescription>
+                    Preencha todas as informações solicitadas para completar sua anamnese.
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle>Questionário de Anamnese</CardTitle>
-                <CardDescription>
-                  Preencha todas as informações solicitadas para completar sua anamnese.
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {patientData && anamnesisData && (
-              <PatientAnamnesisForm
-                patientData={{
-                  name: patientData.name,
-                  phone: patientData.phone,
-                  email: patientData.email,
-                  birth_date: patientData.birth_date,
-                }}
-                procedureName={anamnesisData.procedure_name}
-                onSubmit={handleSubmitQuestionnaire}
-                onCancel={() => window.close()}
-                submitLabel={isLoading ? 'Salvando...' : 'Finalizar Anamnese'}
-                isLoading={isLoading}
-              />
-            )}
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              {patientData && anamnesisData && (
+                <PatientAnamnesisForm
+                  patientData={{
+                    name: patientData.name,
+                    phone: patientData.phone,
+                    email: patientData.email,
+                    birth_date: patientData.birth_date,
+                  }}
+                  procedureName={anamnesisData.procedure_name}
+                  onSubmit={handleSubmitQuestionnaire}
+                  onCancel={() => window.close()}
+                  submitLabel={isLoading ? 'Salvando...' : 'Finalizar Anamnese'}
+                  isLoading={isLoading}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      {/* Modal de Geração do Termo */}
+      <Dialog 
+        open={showGeneratingModal} 
+        onOpenChange={(open) => {
+          // Só permite fechar se a geração estiver completa
+          if (isGenerationComplete) {
+            setShowGeneratingModal(open);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md" hideClose={!isGenerationComplete}>
+          <DialogHeader>
+            <div className="flex items-center justify-center mb-4">
+              {!isGenerationComplete ? (
+                <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
+                  <FileText className="h-8 w-8 text-blue-600 animate-pulse" />
+                </div>
+              ) : (
+                <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
+                  <CheckCircle2 className="h-8 w-8 text-green-600" />
+                </div>
+              )}
+            </div>
+            <DialogTitle className="text-center">
+              {!isGenerationComplete ? 'Gerando Termo de Consentimento' : 'Termo Gerado com Sucesso!'}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {!isGenerationComplete ? (
+                <>
+                  <div className="flex items-center justify-center mb-3">
+                    <Loader2 className="h-5 w-5 animate-spin text-blue-600 mr-2" />
+                    <span>Processando suas informações...</span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Estamos gerando seu termo de consentimento personalizado. O documento será enviado via WhatsApp em alguns segundos.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Seu termo de consentimento foi gerado e será enviado para o seu WhatsApp em instantes. Obrigado por preencher a anamnese!
+                  </p>
+                  <p className="text-sm text-gray-500 font-medium">
+                    Você já pode fechar esta janela.
+                  </p>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {isGenerationComplete && (
+            <div className="flex justify-center mt-4">
+              <Button 
+                onClick={() => setShowGeneratingModal(false)}
+                className="w-full"
+              >
+                Fechar
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

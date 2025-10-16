@@ -22,6 +22,7 @@ export type PatientAnamnesisFormValues = {
   chronicDiseaseOther?: string;
 
   continuousMedication: boolean;
+  continuousMedicationDescription?: string;
   medicationAllergy: boolean;
   medicationAllergyDescription?: string;
 
@@ -77,6 +78,7 @@ export const PatientAnamnesisForm: React.FC<Props> = ({
     chronicDiseaseOther: defaultValues?.chronicDiseaseOther ?? '',
 
     continuousMedication: defaultValues?.continuousMedication ?? false,
+    continuousMedicationDescription: defaultValues?.continuousMedicationDescription ?? '',
     medicationAllergy: defaultValues?.medicationAllergy ?? false,
     medicationAllergyDescription: defaultValues?.medicationAllergyDescription ?? '',
 
@@ -97,6 +99,7 @@ export const PatientAnamnesisForm: React.FC<Props> = ({
 
   const canSubmit = (() => {
     if (values.chronicDisease === 'outra' && !values.chronicDiseaseOther?.trim()) return false;
+    if (values.continuousMedication && !values.continuousMedicationDescription?.trim()) return false;
     if (values.medicationAllergy && !values.medicationAllergyDescription?.trim()) return false;
     if (values.previousFacialProcedures) {
       if (!values.previousFacialProcedureOption) return false;
@@ -193,7 +196,7 @@ export const PatientAnamnesisForm: React.FC<Props> = ({
             </div>
             <Switch
               checked={values.continuousMedication}
-              onCheckedChange={(checked) => setValues(v => ({ ...v, continuousMedication: checked }))}
+              onCheckedChange={(checked) => setValues(v => ({ ...v, continuousMedication: checked, continuousMedicationDescription: checked ? v.continuousMedicationDescription : '' }))}
             />
           </div>
 
@@ -207,9 +210,19 @@ export const PatientAnamnesisForm: React.FC<Props> = ({
             />
           </div>
         </div>
+        {values.continuousMedication && (
+          <div>
+            <Label>Quais medicamentos?</Label>
+            <Input 
+              value={values.continuousMedicationDescription ?? ''} 
+              onChange={(e) => setValues(v => ({ ...v, continuousMedicationDescription: e.target.value }))} 
+              placeholder="Descreva os medicamentos em uso contínuo"
+            />
+          </div>
+        )}
         {values.medicationAllergy && (
           <div>
-            <Label>Qual(is)?</Label>
+            <Label>Qual(is) alergias?</Label>
             <Input 
               value={values.medicationAllergyDescription ?? ''} 
               onChange={(e) => setValues(v => ({ ...v, medicationAllergyDescription: e.target.value }))} 
